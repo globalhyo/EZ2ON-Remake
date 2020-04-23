@@ -65,6 +65,7 @@ public class Launcher : MonoBehaviour
 		SceneManager.LoadScene(Settings.LaunchScene);
 		Debug.Log("Launch!");
 
+		// Show FPS
 		PersistentCanvas.Instance.Text_FPS.enabled = option.ShowFPS;
 	}
 }
