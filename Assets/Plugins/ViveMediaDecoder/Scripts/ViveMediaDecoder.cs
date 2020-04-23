@@ -886,13 +886,13 @@ namespace HTC.UnityPlugin.Multimedia
 
         void OnApplicationQuit()
         {
-            print(LOG_TAG + " OnApplicationQuit");
+            //print(LOG_TAG + " OnApplicationQuit");
             stopDecoding();
         }
 
         void OnDestroy()
         {
-            print(LOG_TAG + " OnDestroy");
+            //print(LOG_TAG + " OnDestroy");
             stopDecoding();
         }
     }

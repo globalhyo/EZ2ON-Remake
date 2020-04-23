@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +13,7 @@ public class SingleResult : MonoBehaviour
         var canvas = GameObject.Find("Canvas").transform;
         var singleResultUI = Instantiate(SingleResultUI);
         singleResultUI.transform.SetParent(canvas, false);
-        EZR.MemorySound.PlaySound(EZR.DataLoader.LoadFile(Path.Combine(EZR.Master.GameResourcesFolder, "BGM.ezr"), "bgm_result.ogg"), false);
+        EZR.MemorySound.PlayStream(Path.Combine(EZR.Master.GameResourcesFolder, "BGM", "bgm_result.ogg"), false);
         StartCoroutine(waitEnd());
     }
 
@@ -31,7 +31,7 @@ public class SingleResult : MonoBehaviour
 
     void End()
     {
-        SceneManager.LoadScene("SingleSelectSong");
+        SceneManager.LoadScene("SingleSelectSongs");
         EZR.MemorySound.StopStream();
         EZR.MemorySound.Game.stop();
     }

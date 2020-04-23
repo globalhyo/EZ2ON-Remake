@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.InteropServices;
@@ -80,18 +80,19 @@ namespace EZR
             FMODUnity.RuntimeManager.CoreSystem.createChannelGroup("BGM", out BGM);
             FMODUnity.RuntimeManager.CoreSystem.createChannelGroup("Game", out Game);
 
-            var ezrPath = Path.Combine(Master.GameResourcesFolder, "SoundUI.ezr");
-            var soundUINames = DataLoader.GetNames(ezrPath);
-            DataLoader.OpenStream(ezrPath);
-            foreach (var name in soundUINames)
+            var soundUIPath = Path.Combine(Master.GameResourcesFolder, "SoundUI");
+            if (Directory.Exists(soundUIPath))
             {
-                var ext = Path.GetExtension(name);
-                if (Regex.IsMatch(ext, @"\.ogg$|\.mp3$|\.wav$", RegexOptions.IgnoreCase))
+                var files = Directory.GetFiles(soundUIPath);
+                foreach (var fileName in files)
                 {
-                    LoadSound(Path.GetFileNameWithoutExtension(name), DataLoader.LoadFile(name));
+                    var ext = Path.GetExtension(fileName);
+                    if (Regex.IsMatch(ext, @"\.ogg$|\.mp3$|\.wav$", RegexOptions.IgnoreCase))
+                    {
+                        LoadSound(Path.GetFileNameWithoutExtension(fileName), File.ReadAllBytes(fileName));
+                    }
                 }
             }
-            DataLoader.CloseStream();
         }
 
         public static void LoadSound(int id, byte[] data)
@@ -114,7 +115,7 @@ namespace EZR
                 SoundUI[name] = sound;
         }
 
-        public static FMOD.Channel? PlaySound(int id, float vol, float pan, FMOD.ChannelGroup group)
+        public static FMOD.Channel? PlaySound(int id, float vol, float pan, FMOD.ChannelGroup group, float pitch = 1f)
         {
             if (SoundList.ContainsKey(id))
             {
@@ -123,8 +124,10 @@ namespace EZR
                 {
                     channel.setVolume(vol);
                     channel.setPan(pan);
-                    channel.setPaused(false);
-                    return channel;
+					channel.setPitch(pitch);
+					channel.setPaused(false);
+
+					return channel;
                 }
                 else return null;
             }
@@ -133,9 +136,9 @@ namespace EZR
 
         public static void PlaySound(string name)
         {
-            if (SoundUI.ContainsKey(name.ToLower()))
+            if (SoundUI.ContainsKey(name))
             {
-                FMODUnity.RuntimeManager.CoreSystem.playSound(SoundUI[name.ToLower()], Game, false, out FMOD.Channel channel);
+                FMODUnity.RuntimeManager.CoreSystem.playSound(SoundUI[name], Game, false, out FMOD.Channel channel);
             }
         }
 

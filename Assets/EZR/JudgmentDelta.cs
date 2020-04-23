@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,7 +27,7 @@ namespace EZR
         public static float Good { get; private set; }
         public static float Miss { get; private set; }
         public static float MeasureScale { get; private set; }
-        static float globalScale = 0.8f;
+        public static float GlobalScale = 0.8f;
 
         public static bool CompareJudgmentDelta(double delta, JudgmentType judgment, float scale)
         {
@@ -51,13 +51,13 @@ namespace EZR
             switch (judgment)
             {
                 case JudgmentType.Kool:
-                    return Kool * scale * globalScale;
+                    return Kool * scale * GlobalScale;
                 case JudgmentType.Cool:
-                    return Cool * scale * globalScale;
+                    return Cool * scale * GlobalScale;
                 case JudgmentType.Good:
-                    return Good * scale * globalScale;
+                    return Good * scale * GlobalScale;
                 case JudgmentType.Miss:
-                    return Miss * scale * globalScale;
+                    return Miss * scale * GlobalScale;
                 default:
                     return -1;
             }

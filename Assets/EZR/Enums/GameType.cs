@@ -6,4 +6,11 @@ namespace EZR
         EZ2DJ,
         DJMAX
     }
+
+	public enum NotePattern
+	{
+		None,
+		Mirror,
+		Random
+	}
 }

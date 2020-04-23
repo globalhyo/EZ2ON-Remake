@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -16,7 +16,7 @@ namespace EZR
 
         void Start()
         {
-            canvas = GameObject.Find("PersistentCanvas").transform;
+            canvas = PersistentCanvas.Instance.transform;
         }
 
         public void OnPointerEnter(PointerEventData eventData)

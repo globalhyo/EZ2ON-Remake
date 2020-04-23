@@ -1,4 +1,4 @@
-namespace EZR
+﻿namespace EZR
 {
     public enum JudgmentType
     {

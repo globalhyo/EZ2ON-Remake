@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,53 +8,83 @@ public class SinglePlay : MonoBehaviour
     bool isFinished = false;
     EZR.DisplayLoop displayLoop;
 
-    void Start()
+	private KeyCodeVK _lastKeyCode;
+	private bool _isKeyPressed;
+
+	private EZR.Option _option;
+
+	void Start()
     {
-        EZR.PlayManager.Reset();
+#if (!UNITY_EDITOR)
+        // 关闭内存回收
+        UnityEngine.Scripting.GarbageCollector.GCMode = UnityEngine.Scripting.GarbageCollector.Mode.Disabled;
+#endif
+
+		_option = EZR.UserSaveData.GetOption();
+		EZR.JudgmentDelta.GlobalScale = _option.JudgeLevel;
+
+		EZR.PlayManager.Reset();
         EZR.PlayManager.LoadPattern();
 
         EZR.PlayManager.LoopStop += loopStop;
+		EZR.Master.InputVirtualKeyEvent += InputVirtualKeyEvent;
 
         displayLoop = GetComponent<EZR.DisplayLoop>();
         displayLoop.enabled = true;
     }
 
-    Coroutine speedPressedCoroutine;
+	private void OnDestroy()
+	{
+		EZR.Master.InputVirtualKeyEvent -= InputVirtualKeyEvent;
+	}
+
+	private void InputVirtualKeyEvent(KeyCodeVK keyCode, bool pressed)
+	{
+		_lastKeyCode = keyCode;
+		_isKeyPressed = pressed;
+	}
+
+	Coroutine speedPressedCoroutine;
     void Update()
     {
-
-        if (isFinished)
+		if (isFinished)
         {
             isFinished = false;
             finished(true);
             return;
         }
 
-        // 关门
-        if (EZR.PlayManager.HP == 0)
+		if (_isKeyPressed)
+		{
+			if (_lastKeyCode == (KeyCodeVK)_option.KeyMapping[5, 0])
+			{
+				EZR.PlayManager.IsAutoPlay = !EZR.PlayManager.IsAutoPlay;
+				EZR.MemorySound.PlaySound("e_count_1");
+				_isKeyPressed = false;
+			}
+			else if (_lastKeyCode == (KeyCodeVK)_option.KeyMapping[5, 1])
+			{
+				speedAdd(0.25f);
+				_isKeyPressed = false;
+			}
+			else if (_lastKeyCode == (KeyCodeVK)_option.KeyMapping[5, 2])
+			{
+				speedAdd(-0.25f);
+				_isKeyPressed = false;
+			}
+		}
+
+
+		// 关门
+		if (EZR.PlayManager.HP == 0)
         {
             finished(true);
             EZR.MemorySound.PlaySound("e_die");
         }
 
-        if (Input.GetKeyDown(KeyCode.F4))
-        {
-            speedAdd(0.25f);
-        }
-        if (Input.GetKeyDown(KeyCode.F3))
-        {
-            speedAdd(-0.25f);
-        }
-
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             finished(false);
-        }
-
-        if (Input.GetKeyDown(KeyCode.F2))
-        {
-            EZR.PlayManager.IsAutoPlay = !EZR.PlayManager.IsAutoPlay;
-            EZR.MemorySound.PlaySound("e_count_1");
         }
 
         if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
@@ -140,7 +170,9 @@ public class SinglePlay : MonoBehaviour
         else
             EZR.PlayManager.FallSpeed = ((int)EZR.PlayManager.FallSpeed + closest) + val;
         EZR.MemorySound.PlaySound("e_count_1");
-    }
+
+		EZR.PlayManager.OnUpdateSpeed?.Invoke(EZR.PlayManager.FallSpeed);
+	}
 
     void loopStop()
     {
@@ -161,6 +193,12 @@ public class SinglePlay : MonoBehaviour
         if (isResult)
             SceneManager.LoadScene("SingleResult");
         else
-            SceneManager.LoadScene("SingleSelectSong");
+            SceneManager.LoadScene("SingleSelectSongs");
+
+#if (!UNITY_EDITOR)
+                // 开启内存回收
+                UnityEngine.Scripting.GarbageCollector.GCMode = UnityEngine.Scripting.GarbageCollector.Mode.Enabled;
+                System.GC.Collect();
+#endif
     }
 }

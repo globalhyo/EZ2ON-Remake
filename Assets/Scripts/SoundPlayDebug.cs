@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,13 +11,11 @@ public class SoundPlayDebug : MonoBehaviour
     float frameTime = 0;
     int frames = 0;
     int fps = 0;
-    EZR.DisplayLoop displayLoop;
 
     void Start()
     {
         EZR.PlayManager.LoopStop += loopStop;
         EZR.PlayManager.DebugEvent += debugEvent;
-        displayLoop = GameObject.Find("ScriptObject").GetComponent<EZR.DisplayLoop>();
     }
 
     // Update is called once per frame
@@ -43,11 +41,7 @@ public class SoundPlayDebug : MonoBehaviour
             "\nGood: " + EZR.PlayManager.Score.Good +
             "\nMiss: " + EZR.PlayManager.Score.Miss +
             "\nFail: " + EZR.PlayManager.Score.Fail +
-            "\n[Speed: " + EZR.PlayManager.FallSpeed + "]" +
-            "\nNote pool A: " + displayLoop.notePoolA.Count +
-            "\nNote pool B: " + displayLoop.notePoolB.Count +
-            "\nNote pool C: " + (displayLoop.notePoolC != null ? displayLoop.notePoolC.Count : 0) +
-            "\nMeasure line pool: " + displayLoop.measureLinePool.Count;
+            "\n[Speed: " + EZR.PlayManager.FallSpeed + "]";
     }
 
     void debugEvent(string message, int id)

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,7 +38,7 @@ public class SingleResultUI : MonoBehaviour
 
     void Start()
     {
-        var info = EZR.SongList.List[EZR.SongList.CurrentIndex];
+        var info = EZR.SongsList.List[EZR.SongsList.CurrentIndex];
         transform.Find("SongName").GetComponent<Text>().text = info.displayName.ToUpper();
         var diffText = transform.Find("Difficult").GetComponent<Text>();
         diffText.text = EZR.GameDifficult.GetFullName(EZR.PlayManager.GameDifficult).ToUpper();
@@ -164,23 +164,11 @@ public class SingleResultUI : MonoBehaviour
                     EZR.PlayManager.GameMode == EZR.GameMode.Mode.EightKey)
                     fileName = EZR.PlayManager.SongName + "_ORG" + EZR.GameDifficult.GetString(EZR.PlayManager.GameDifficult) + ".png";
                 else
-                    fileName = "song_pic_f_" + EZR.PlayManager.SongName + "_" + ((int)EZR.PlayManager.GameDifficult - (int)EZR.GameDifficult.Difficult.DJMAX_EZ).ToString().PadLeft(2, '0') + ".png";
+                    fileName = "song_pic_f_" + EZR.PlayManager.SongName + "_" + ((int)EZR.PlayManager.GameDifficult - 4).ToString().PadLeft(2, '0') + ".png";
                 break;
         }
-        var buffer = EZR.DataLoader.LoadFile(EZR.DataLoader.GetEZRDataPath(EZR.PlayManager.GameType, EZR.PlayManager.SongName), fileName);
-        if (buffer == null && EZR.PlayManager.GameDifficult == EZR.GameDifficult.Difficult.EX)
-        {
-            switch (EZR.PlayManager.GameType)
-            {
-                case EZR.GameType.EZ2ON:
-                    fileName = "big_" + EZR.PlayManager.SongName + EZR.GameDifficult.GetString(EZR.GameDifficult.Difficult.SHD) + ".png";
-                    break;
-                case EZR.GameType.EZ2DJ:
-                    fileName = EZR.PlayManager.SongName + EZR.GameDifficult.GetString(EZR.GameDifficult.Difficult.SHD) + ".bmp";
-                    break;
-            }
-            buffer = EZR.DataLoader.LoadFile(EZR.DataLoader.GetEZRDataPath(EZR.PlayManager.GameType, EZR.PlayManager.SongName), fileName);
-        }
+
+        var buffer = EZR.ZipLoader.LoadFileSync(Path.Combine(EZR.Master.GameResourcesFolder, EZR.PlayManager.GameType.ToString(), "Songs", EZR.PlayManager.SongName + ".zip"), fileName);
         if (buffer != null)
         {
             var dmo = transform.Find("Disc/Dmo");

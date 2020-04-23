@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace EZR
 {
@@ -28,48 +29,65 @@ namespace EZR
         // win平台手动调整线程片段时间
 #if (UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN)
         [DllImport("winmm.dll")]
-        static extern uint timeBeginPeriod(uint period);
+        internal static extern uint timeBeginPeriod(uint period);
 
         [DllImport("winmm.dll")]
-        static extern uint timeEndPeriod(uint period);
+        internal static extern uint timeEndPeriod(uint period);
 
         // 捕获底层键盘输入
         [DllImport("user32.dll")]
-        static extern short GetAsyncKeyState(int vKey);
+        public static extern short GetAsyncKeyState(int vKey);
 #endif
 
-        public static event Action MainLoop;
+		public static event Action MainLoop;
 
         public static event Action<int, bool> InputEvent;
-        public static bool[] KeysState = new bool[PlayManager.MaxLines];
+		public static event Action<KeyCodeVK, bool> InputVirtualKeyEvent;
 
-        public static char[][] DefaultKeyCodeMapping = new char[][]{
-            new char[]{'D','F','J','K'},
-            new char[]{'D','F',(char)32,'J','K'},
-            new char[]{'S','D','F','J','K','L'},
-            new char[]{'S','D','F',(char)32,'J','K','L'},
-            new char[]{'A','S','D','F','J','K','L',(char)186}
-        };
+		public static bool[] KeysState = new bool[PlayManager.MaxLines];
+		public static bool[] vKeysState;
 
-        public static char[][] KeyCodeMapping;
+		//public static char[][] DefaultKeyCodeMapping = new char[][]{
+  //          new char[]{'D','F','J','K'},
+  //          new char[]{'D','F',(char)32,'J','K'},
+  //          new char[]{'S','D','F','J','K','L'},
+  //          new char[]{'S','D','F',(char)32,'J','K','L'},
+  //          new char[]{'A','S','D','F','J','K','L',(char)186}
+  //      };
 
-        public static bool GameHasFocus = true;
+        public static char[,] KeyCodeMapping = new char[6, 8];
 
         static Master()
         {
-            // 初始化按键映射
-            KeyCodeMapping = new char[DefaultKeyCodeMapping.Length][];
-            for (int i = 0; i < DefaultKeyCodeMapping.Length; i++)
-            {
-                KeyCodeMapping[i] = new char[DefaultKeyCodeMapping[i].Length];
-                for (int j = 0; j < DefaultKeyCodeMapping[i].Length; j++)
-                {
-                    KeyCodeMapping[i][j] = DefaultKeyCodeMapping[i][j];
-                }
-            }
+            //KeyCodeMapping = new char[DefaultKeyCodeMapping.Length][];
+            //for (int i = 0; i < DefaultKeyCodeMapping.Length; i++)
+            //{
+            //    KeyCodeMapping[i] = new char[DefaultKeyCodeMapping[i].Length];
+            //    for (int j = 0; j < DefaultKeyCodeMapping[i].Length; j++)
+            //    {
+            //        KeyCodeMapping[i][j] = DefaultKeyCodeMapping[i][j];
+            //    }
+            //}
+
+			Array vkeysArray = Enum.GetValues(typeof(KeyCodeVK));
+			int vkeysLen = vkeysArray.Length;
+
+			KeyCodeVK[] vkeys = new KeyCodeVK[vkeysLen];
+			for (int i = 0; i < vkeysLen; i++)
+			{
+				vkeys[i] = (KeyCodeVK)vkeysArray.GetValue(i);
+			}
+
+			char[] vkeysChar = new char[vkeysLen];
+			for (int i = 0; i < vkeysLen; i++)
+			{
+				vkeysChar[i] = (char)((int)vkeys[i]);
+			}
+
+			vKeysState = new bool[vkeysLen];
 
 #if (UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN)
-            timeBeginPeriod(1);
+			timeBeginPeriod(1);
 #endif
 
             Task.Run(() =>
@@ -82,33 +100,42 @@ namespace EZR
                     {
                         // 捕获按键
 #if (UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN)
-                        // 游戏失焦键盘输入需失效
-                        if (GameHasFocus)
+                        for (int i = 0; i < PlayManager.NumLines; i++)
                         {
-                            for (int i = 0; i < PlayManager.NumLines; i++)
+							if (KeyCodeMapping == null) continue;
+
+                            var keyCode = KeyCodeMapping[PlayManager.NumLines - 4, i];
+                            var isDown = GetAsyncKeyState(keyCode) < 0;
+                            if (isDown != KeysState[i])
                             {
-                                var keyCode = KeyCodeMapping[PlayManager.NumLines - 4][i];
-                                var isDown = GetAsyncKeyState(keyCode) < 0;
-                                if (isDown != KeysState[i])
-                                {
-                                    KeysState[i] = isDown;
-                                    if (InputEvent != null)
-                                        InputEvent(i, KeysState[i]);
-                                }
+                                KeysState[i] = isDown;
+								InputEvent?.Invoke(i, KeysState[i]);
                             }
                         }
+
+						for (int i = 0; i < vkeysLen; i++)
+						{
+							char keyCode = vkeysChar[i];
+							bool isDown = GetAsyncKeyState(keyCode) < 0;
+							if (isDown != vKeysState[i])
+							{
+								KeyCodeVK code = vkeys[i];
+								vKeysState[i] = isDown;
+								InputVirtualKeyEvent?.Invoke(code, isDown);
+							}
+						}
 #endif
 
-                        if (MainLoop != null)
+						if (MainLoop != null)
                             MainLoop();
 
                         Thread.Sleep(TimePrecision);
                     }
 #if (UNITY_EDITOR)
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Debug.LogError(e.Message + "\n" + e.StackTrace);
+                    Debug.LogError(ex.Message + "\n" + ex.StackTrace);
                 }
 #endif
             });
@@ -158,14 +185,6 @@ namespace EZR
                 timeEndPeriod(1);
 #endif
                 MemorySound.StopSound();
-            }
-
-            void OnApplicationFocus(bool hasFocus)
-            {
-                Master.GameHasFocus = hasFocus;
-                // 失焦静音
-                FMODUnity.RuntimeManager.CoreSystem.getMasterChannelGroup(out FMOD.ChannelGroup masterGroup);
-                masterGroup.setMute(!Master.GameHasFocus);
             }
         }
     }

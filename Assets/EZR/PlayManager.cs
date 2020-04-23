@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
@@ -9,6 +9,9 @@ namespace EZR
 {
     public static partial class PlayManager
     {
+		public static event System.Action<JudgmentType> OnUpdateScore;
+		public static System.Action<float> OnUpdateSpeed;
+
         public static double UnscaledPosition = 0;
         public static double Position => UnscaledPosition * JudgmentDelta.MeasureScale;
         static float fallSpeed = 2;
@@ -34,7 +37,7 @@ namespace EZR
         public static GameMode.Mode GameMode = EZR.GameMode.Mode.RubyMixON;
         public static GameDifficult.Difficult GameDifficult = EZR.GameDifficult.Difficult.EZ;
 
-        public static TimeLine TimeLine;
+        public static TimeLines TimeLines;
 
         public static bool IsAutoPlay = false;
         public static float BGADelay = 0;
@@ -57,11 +60,14 @@ namespace EZR
         public static Option.TargetLineTypeEnum TargetLineType = Option.TargetLineTypeEnum.Classic;
         public static int JudgmentOffset = 0;
 
+		public static NotePattern NotePattern = NotePattern.None;
+		public static float PlaybackSpeed = 1f;
+
         public static void LoadPattern()
         {
             string jsonPath = PatternUtils.Pattern.GetFileName(SongName, GameType, GameMode, GameDifficult);
-            var ezrPath = EZR.DataLoader.GetEZRDataPath(GameType, SongName);
-            var buffer = DataLoader.LoadFile(ezrPath, jsonPath);
+            string zipPath = Path.Combine(Master.GameResourcesFolder, GameType.ToString(), "Songs", SongName + ".zip");
+            var buffer = ZipLoader.LoadFileSync(zipPath, jsonPath);
             Debug.Log(jsonPath);
             if (buffer == null)
             {
@@ -106,7 +112,7 @@ namespace EZR
             if (pattern == null) return;
 
             // 读取所有音频
-            DataLoader.OpenStream(ezrPath);
+            ZipLoader.OpenZip(zipPath);
             for (int i = 0; i < pattern.SoundList.Count; i++)
             {
                 var fileName = pattern.SoundList[i].filename;
@@ -124,28 +130,25 @@ namespace EZR
                             fileName = Path.ChangeExtension(pattern.SoundList[i].filename, "mp3");
                             break;
                     }
-                    if (DataLoader.Exists(fileName))
+                    if (ZipLoader.Exists(fileName))
                     {
-                        buffer = DataLoader.LoadFile(fileName);
+                        buffer = ZipLoader.LoadFile(fileName);
                         MemorySound.LoadSound(i, buffer);
                         break;
                     }
                 }
             }
-            DataLoader.CloseStream();
+            ZipLoader.CloseZip();
 
             // 清空lines
-            TimeLine = new TimeLine();
-            TimeLine.Clear();
+            TimeLines = new TimeLines();
+            TimeLines.Clear();
 
             // 结束tick
-            TimeLine.EndTick = pattern.EndTick;
-            TimeLine.SoundList = pattern.SoundList;
+            TimeLines.EndTick = pattern.EndTick;
+            TimeLines.SoundList = pattern.SoundList;
             // bpm
-            TimeLine.HeadBPM = pattern.BeatsPerMinute;
-            TimeLine.BPMList = pattern.BPMList;
-            // beat
-            TimeLine.BeatList = pattern.BeatList;
+            TimeLines.BPMList = pattern.BPMList;
             // 映射Lines
             for (int i = 0; i < pattern.TrackList.Count; i++)
             {
@@ -157,33 +160,42 @@ namespace EZR
                     {
                         var note = pattern.TrackList[i].Notes[j];
 
-                        TimeLine.Lines[mapping].Notes.Add(note);
+                        TimeLines.Lines[mapping].Notes.Add(note);
                         if (mapping <= 7)
                         {
                             if (note.length > 6)
                             {
-                                TimeLine.TotalNote += Mathf.Max(1, note.length / Judgment.LongNoteComboStep);
+                                TimeLines.TotalNote += note.length / Judgment.LongNoteComboStep;
                             }
                             else
-                                TimeLine.TotalNote++;
+                                TimeLines.TotalNote++;
                         }
                     }
                 }
             }
             // 总音符数
-            Score.TotalNote = TimeLine.TotalNote;
-            Debug.Log("Total note: " + Score.TotalNote);
+            Score.TotalNote = TimeLines.TotalNote;
+            //Debug.Log("Total note: " + Score.TotalNote);
             // 排序
-            TimeLine.SortLines();
+            TimeLines.SortLines();
 
-            NumLines = EZR.GameMode.GetNumLines(GameMode);
+			NumLines = EZR.GameMode.GetNumLines(GameMode);
 
-            // 读BGA ini文件 修正bga延迟
-            string iniPath;
-            if (GameType == GameType.EZ2ON || GameType == GameType.EZ2DJ)
-                iniPath = Path.Combine(Master.GameResourcesFolder, "EZ2Series", "Ingame", SongList.List[SongList.CurrentIndex].bgaName + ".ini");
-            else
-                iniPath = Path.Combine(Master.GameResourcesFolder, GameType.ToString(), "Ingame", SongList.List[SongList.CurrentIndex].bgaName + ".ini");
+			switch (NotePattern)
+			{
+				case NotePattern.None:
+
+					break;
+				case NotePattern.Mirror:
+					TimeLines.MirrorLines(NumLines);
+					break;
+				case NotePattern.Random:
+					TimeLines.RandomLines(NumLines);
+					break;
+			}
+
+			// 读BGA ini文件 修正bga延迟
+			var iniPath = Path.Combine(Master.GameResourcesFolder, GameType.ToString(), "Ingame", SongName + ".ini");
             if (File.Exists(iniPath))
             {
                 try
@@ -213,8 +225,8 @@ namespace EZR
             HP = MaxHp;
             Combo = 0;
 
-            if (TimeLine != null)
-                TimeLine.Reset();
+			if (TimeLines != null)
+                TimeLines.Reset();
 
             MemorySound.Main.stop();
             MemorySound.BGM.stop();
@@ -224,7 +236,8 @@ namespace EZR
         {
             if (IsAutoPlay) return;
             Score.AddScore(judgment, Combo);
-        }
+			OnUpdateScore?.Invoke(judgment);
+		}
 
         public static void AddCombo()
         {

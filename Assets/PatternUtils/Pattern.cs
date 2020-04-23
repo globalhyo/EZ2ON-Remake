@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
@@ -8,7 +8,6 @@ namespace PatternUtils
     public partial class Pattern
     {
         public static int TickPerMeasure => 192;
-        public float BeatsPerMinute = 120f;
         public int EndTick = 0;
         public class Sound
         {
@@ -25,14 +24,6 @@ namespace PatternUtils
         }
 
         public List<BPM> BPMList = new List<BPM>();
-
-        public class Beat
-        {
-            public int position = 0;
-            public int beat = 4;
-        }
-
-        public List<Beat> BeatList = new List<Beat>();
 
         public class Note
         {

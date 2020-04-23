@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
@@ -40,43 +40,37 @@ namespace EZR
         public static void MainLoop()
         {
             // bpm
-            while (TimeLine.BPMIndex < TimeLine.BPMList.Count && TimeLine.BPMList[TimeLine.BPMIndex].position <= UnscaledPosition)
+            while (TimeLines.BPMIndex < TimeLines.BPMList.Count && TimeLines.BPMList[TimeLines.BPMIndex].position <= UnscaledPosition)
             {
-                TimeLine.BPM = TimeLine.BPMList[TimeLine.BPMIndex].bpm;
-                TimeLine.BPMIndex++;
-            }
-            // Beat
-            while (TimeLine.BeatIndex < TimeLine.BeatList.Count && TimeLine.BeatList[TimeLine.BeatIndex].position <= UnscaledPosition)
-            {
-                TimeLine.Beat = TimeLine.BeatList[TimeLine.BeatIndex].beat;
-                TimeLine.BeatIndex++;
+                TimeLines.BPM = TimeLines.BPMList[TimeLines.BPMIndex].bpm;
+                TimeLines.BPMIndex++;
             }
 
             // 播放音符
-            for (int i = 0; i < TimeLine.MaxLines; i++)
+            for (int i = 0; i < TimeLines.MaxLines; i++)
             {
-                var line = TimeLine.Lines[i];
+                var line = TimeLines.Lines[i];
 
-                while (TimeLine.LinesIndex[i] < line.Notes.Count && line.Notes[TimeLine.LinesIndex[i]].position <= UnscaledPosition)
+                while (TimeLines.LinesIndex[i] < line.Notes.Count && line.Notes[TimeLines.LinesIndex[i]].position <= UnscaledPosition)
                 {
                     // 跳过可玩轨道
                     if (i > 7)
                     {
-                        var note = line.Notes[TimeLine.LinesIndex[i]];
+                        var note = line.Notes[TimeLines.LinesIndex[i]];
 
                         if (PlayManager.GameType == GameType.DJMAX &&
                         PlayManager.GameMode < EZR.GameMode.Mode.FourKey &&
                         note.id == 0)
                             IsPlayBGA = true;
 
-                        MemorySound.PlaySound(note.id, note.vol, note.pan, MemorySound.BGM);
+                        MemorySound.PlaySound(note.id, note.vol, note.pan, MemorySound.BGM, PlaybackSpeed);
 
                         // debug事件
                         if (DebugEvent != null)
                         {
                             DebugEvent(string.Format(
                                 "[{3}] Sound: {0}\n[vol: {1}] [pan:{2}]",
-                                TimeLine.SoundList[note.id].filename,
+                                TimeLines.SoundList[note.id].filename,
                                 (int)(note.vol * 100),
                                 (int)(note.pan * 100),
                                 (int)Position
@@ -84,7 +78,7 @@ namespace EZR
                         }
                     }
 
-                    TimeLine.LinesIndex[i]++;
+                    TimeLines.LinesIndex[i]++;
                 }
             }
 
@@ -92,12 +86,13 @@ namespace EZR
             DeltaTime = (now - lastTime) / 10000000d;
             lastTime = now;
 
-            TickPerSecond = TimeLine.BPM * 0.25d * PatternUtils.Pattern.TickPerMeasure / 60d;
+			// nightCore
+            TickPerSecond = (TimeLines.BPM * PlaybackSpeed) * 0.25d * PatternUtils.Pattern.TickPerMeasure / 60d;
             PositionDelta = DeltaTime * TickPerSecond;
             UnscaledPosition += PositionDelta;
 
             // 检测结束
-            if (UnscaledPosition >= TimeLine.EndTick)
+            if (UnscaledPosition >= TimeLines.EndTick)
             {
                 Stop();
                 if (LoopStop != null)
@@ -105,7 +100,7 @@ namespace EZR
                 return;
             }
 
-            beat += DeltaTime * (TimeLine.BPM / 60d);
+            beat += DeltaTime * ((TimeLines.BPM * PlaybackSpeed) / 60d);
 
             // 节奏事件
             if (beat >= 1)

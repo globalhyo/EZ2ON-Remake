@@ -4,16 +4,15 @@ using Newtonsoft.Json.Linq;
 using System.Security.Cryptography;
 using System.IO;
 using System.Collections.Generic;
-using System.Text;
 
 namespace EZR
 {
     public static class UserSaveData
     {
-        public static string Version => "1.1";
-        public static string MinVer => "1.1";
+        public static string Version => "1.4";
+        public static string MinVer => "1.4";
         public static JObject UserData = new JObject(new JProperty("version", Version));
-        static string aesKey = "GameOldBoyEZ2ONRemake";
+        static string aesKey = "LodasEZ2OFF2020";
         static string saveName = "userdata.save";
 
         static byte[] getKeyBytes
@@ -48,7 +47,7 @@ namespace EZR
 
         public static void SaveData()
         {
-            using (var aes = new AesManaged())
+            using (var aes = Aes.Create())
             {
                 aes.Key = getKeyBytes;
                 aes.IV = getIvBytes;
@@ -58,25 +57,24 @@ namespace EZR
                 {
                     using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                     {
-                        UserData["version"] = Version;
-                        var buffer = Encoding.UTF8.GetBytes(UserData.ToString(Formatting.None));
-                        for (int i = 0; i < buffer.LongLength; i++)
+                        using (var swEncrypt = new StreamWriter(csEncrypt))
                         {
-                            csEncrypt.WriteByte(buffer[i]);
+                            UserData["version"] = Version;
+                            swEncrypt.Write(UserData.ToString(Formatting.None));
                         }
+                        File.WriteAllBytes(Path.Combine(Application.persistentDataPath, saveName), msEncrypt.ToArray());
                     }
-                    File.WriteAllBytes(Path.Combine(Application.persistentDataPath, saveName), msEncrypt.ToArray());
                 }
             }
             Debug.Log("Save user data...");
         }
 
-        public static void LoadData()
+        public static void LoadSave()
         {
             var fullPath = Path.Combine(Application.persistentDataPath, saveName);
             if (!File.Exists(fullPath)) return;
             byte[] cipherText = File.ReadAllBytes(fullPath);
-            using (var aes = new AesManaged())
+            using (var aes = Aes.Create())
             {
                 aes.Key = getKeyBytes;
                 aes.IV = getIvBytes;
@@ -86,15 +84,18 @@ namespace EZR
                 {
                     using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                     {
-                        byte[] buffer = new byte[msDecrypt.Length];
-                        csDecrypt.Read(buffer, 0, buffer.Length);
-                        var plaintext = Encoding.UTF8.GetString(buffer);
-                        var userData = JObject.Parse(plaintext);
-                        if (!string.IsNullOrEmpty(((string)userData["version"])) &&
-                        EZR.Utils.Version2Decmal((string)userData["version"]) >= EZR.Utils.Version2Decmal(MinVer))
-                            UserData = userData;
-                        else
-                            UserData["myBestScore"] = userData["myBestScore"];
+                        try
+                        {
+                            using (var srDecrypt = new StreamReader(csDecrypt))
+                            {
+                                var plaintext = srDecrypt.ReadToEnd();
+                                var userData = JObject.Parse(plaintext);
+                                if (!string.IsNullOrEmpty(((string)userData["version"])) &&
+                                EZR.Utils.Version2Decmal((string)userData["version"]) >= EZR.Utils.Version2Decmal(MinVer))
+                                    UserData = userData;
+                            }
+                        }
+                        catch { }
                     }
                 }
             }
@@ -146,8 +147,9 @@ namespace EZR
 
         public static Option GetOption()
         {
-            var option = new Option();
-            if (!UserData.ContainsKey("setting")) return option;
+			Option option = new Option();
+			if (!UserData.ContainsKey("setting")) return option;
+
             option.FullScreenMode = Utils.ParseEnum<FullScreenMode>((string)UserData["setting"]["fullScreenMode"] ?? option.FullScreenMode.ToString());
             option.Resolution = new Resolution()
             {
@@ -155,9 +157,10 @@ namespace EZR
                 height = (int)(UserData["setting"]["resolution"]["height"] ?? option.Resolution.height)
             };
             option.Language = Utils.ParseEnum<SystemLanguage>((string)UserData["setting"]["language"] ?? option.Language.ToString());
+            option.TimePrecision = (int)(UserData["setting"]["timePrecision"] ?? option.TimePrecision);
             option.FrostedGlassEffect = (bool)(UserData["setting"]["frostedGlassEffect"] ?? option.FrostedGlassEffect);
             option.VSync = (bool)(UserData["setting"]["vSync"] ?? option.VSync);
-            option.LimitFPS = (bool)(UserData["setting"]["limitFPS"] ?? option.LimitFPS);
+			option.LimitFPS = (bool)(UserData["setting"]["limitFPS"] ?? option.LimitFPS);
             option.TargetFrameRate = (int)(UserData["setting"]["targetFrameRate"] ?? option.TargetFrameRate);
             option.PanelPosition = Utils.ParseEnum<Option.PanelPositionEnum>((string)(UserData["setting"]["panelPosition"] ?? option.PanelPosition.ToString()));
             option.TargetLineType = Utils.ParseEnum<Option.TargetLineTypeEnum>((string)(UserData["setting"]["targetLineType"] ?? option.TargetLineType.ToString()));
@@ -168,37 +171,87 @@ namespace EZR
             option.Volume.Main = Mathf.Clamp((int)(UserData["setting"]["volume"]["main"] ?? option.Volume.Main), 0, 100);
             option.Volume.BGM = Mathf.Clamp((int)(UserData["setting"]["volume"]["bgm"] ?? option.Volume.BGM), 0, 100);
             option.Volume.Live3D = (bool)(UserData["setting"]["volume"]["live3D"] ?? option.Volume.Live3D);
-            return option;
+
+			option.ShowFPS = (bool)(UserData["setting"]["ShowFPS"] ?? option.ShowFPS);
+			option.ShowBGA = (bool)(UserData["setting"]["ShowBGA"] ?? option.ShowBGA);
+			option.JudgeLevel = (float)(UserData["setting"]["JudgeLevel"] ?? option.JudgeLevel);
+			option.ShowJudgeList = (bool)(UserData["setting"]["ShowJudgeList"] ?? option.ShowJudgeList);
+			option.ShowPercent = (bool)(UserData["setting"]["ShowPercent"] ?? option.ShowPercent);
+			option.UiJudgeLine = (bool)(UserData["setting"]["UiJudgeLine"] ?? option.UiJudgeLine);
+
+			option.GearAlpha = (int)(UserData["setting"]["GearAlpha"] ?? option.GearAlpha);
+			option.BGAlpha = (int)(UserData["setting"]["BGAlpha"] ?? option.BGAlpha);
+			option.HPAlpha = (int)(UserData["setting"]["HPAlpha"] ?? option.HPAlpha);
+			option.JudgeAlpha = (int)(UserData["setting"]["JudgeAlpha"] ?? option.JudgeAlpha);
+			option.ComboAlpha = (int)(UserData["setting"]["ComboAlpha"] ?? option.ComboAlpha);
+
+			if (UserData["setting"]["KeyConfig"] == null) return option;
+
+			int xLen = option.KeyMapping.GetLength(0), yLen = option.KeyMapping.GetLength(1);
+			for (int x = 0; x < xLen; x++)
+			{
+				for (int y = 0; y < yLen; y++)
+				{
+					option.KeyMapping[x, y] = (int)(UserData["setting"]["KeyConfig"][string.Format("{0}_{1}", x, y)] ?? option.KeyMapping[x, y]);
+				}
+			}
+
+			return option;
         }
 
-        public static void SetOption(Option option)
-        {
-            JObject jobj;
-            if (!UserData.ContainsKey("setting"))
-                UserData["setting"] = new JObject();
-            jobj = (JObject)UserData["setting"];
-            jobj["fullScreenMode"] = option.FullScreenMode.ToString();
-            if (!jobj.ContainsKey("resolution"))
-                jobj["resolution"] = new JObject();
-            jobj["resolution"]["width"] = option.Resolution.width;
-            jobj["resolution"]["height"] = option.Resolution.height;
-            jobj["language"] = option.Language.ToString();
-            jobj["frostedGlassEffect"] = option.FrostedGlassEffect;
-            jobj["vSync"] = option.VSync;
-            jobj["limitFPS"] = option.LimitFPS;
-            jobj["targetFrameRate"] = option.TargetFrameRate;
-            jobj["panelPosition"] = option.PanelPosition.ToString();
-            jobj["targetLineType"] = option.TargetLineType.ToString();
-            jobj["judgmentOffset"] = option.JudgmentOffset;
-            jobj["showFastSlow"] = option.ShowFastSlow;
-            if (!jobj.ContainsKey("volume"))
-                jobj["volume"] = new JObject();
-            jobj["volume"]["master"] = option.Volume.Master;
-            jobj["volume"]["game"] = option.Volume.Game;
-            jobj["volume"]["main"] = option.Volume.Main;
-            jobj["volume"]["bgm"] = option.Volume.BGM;
-            jobj["volume"]["live3D"] = option.Volume.Live3D;
-        }
+		public static void SetOption(Option option)
+		{
+			JObject jobj;
+			if (!UserData.ContainsKey("setting"))
+				UserData["setting"] = new JObject();
+			jobj = (JObject)UserData["setting"];
+			jobj["fullScreenMode"] = option.FullScreenMode.ToString();
+			if (!jobj.ContainsKey("resolution"))
+				jobj["resolution"] = new JObject();
+			jobj["resolution"]["width"] = option.Resolution.width;
+			jobj["resolution"]["height"] = option.Resolution.height;
+			jobj["language"] = option.Language.ToString();
+			jobj["timePrecision"] = option.TimePrecision;
+			jobj["frostedGlassEffect"] = option.FrostedGlassEffect;
+			jobj["vSync"] = option.VSync;
+			jobj["limitFPS"] = option.LimitFPS;
+			jobj["targetFrameRate"] = option.TargetFrameRate;
+			jobj["panelPosition"] = option.PanelPosition.ToString();
+			jobj["targetLineType"] = option.TargetLineType.ToString();
+			jobj["judgmentOffset"] = option.JudgmentOffset;
+			jobj["showFastSlow"] = option.ShowFastSlow;
+			if (!jobj.ContainsKey("volume"))
+				jobj["volume"] = new JObject();
+			jobj["volume"]["master"] = option.Volume.Master;
+			jobj["volume"]["game"] = option.Volume.Game;
+			jobj["volume"]["main"] = option.Volume.Main;
+			jobj["volume"]["bgm"] = option.Volume.BGM;
+			jobj["volume"]["live3D"] = option.Volume.Live3D;
+
+			jobj["ShowFPS"] = option.ShowFPS;
+			jobj["ShowBGA"] = option.ShowBGA;
+			jobj["JudgeLevel"] = option.JudgeLevel;
+			jobj["ShowJudgeList"] = option.ShowJudgeList;
+			jobj["ShowPercent"] = option.ShowPercent;
+			jobj["UiJudgeLine"] = option.UiJudgeLine;
+
+			jobj["GearAlpha"] = option.GearAlpha;
+			jobj["BGAlpha"] = option.BGAlpha;
+			jobj["HPAlpha"] = option.HPAlpha;
+			jobj["JudgeAlpha"] = option.JudgeAlpha;
+			jobj["ComboAlpha"] = option.ComboAlpha;
+
+			if (jobj.ContainsKey("KeyConfig") == false)
+				jobj["KeyConfig"] = new JObject();
+			int xLen = option.KeyMapping.GetLength(0), yLen = option.KeyMapping.GetLength(1);
+			for (int x = 0; x < xLen; x++)
+			{
+				for (int y = 0; y < yLen; y++)
+				{
+					jobj["KeyConfig"][string.Format("{0}_{1}", x, y)] = option.KeyMapping[x, y];
+				}
+			}
+		}
 
         public static Dictionary<string, string> GetInventory()
         {

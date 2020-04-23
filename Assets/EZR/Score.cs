@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +6,7 @@ namespace EZR
 {
     public class Score
     {
-        public float RawScore = 0;
+		public float RawScore = 0;
         public int Kool = 0;
         public int Cool = 0;
         public int Good = 0;
@@ -15,6 +15,12 @@ namespace EZR
         public int MaxCombo = 0;
         public int TotalNote = 0;
         public bool IsClear = false;
+
+		private float PercentCount;
+		private int TotalPercent;
+
+		public float Percent;
+		
 
         public enum Bonus
         {
@@ -52,52 +58,38 @@ namespace EZR
             {
                 case JudgmentType.Kool:
                     Kool++;
-                    switch (PlayManager.JudgmentMode)
-                    {
-                        case JudgmentDelta.Mode.Normal:
-                            RawScore += 170 + 17 * Mathf.Log(combo, 2);
-                            break;
-                        case JudgmentDelta.Mode.Easy:
-                            RawScore += 150 + 15 * Mathf.Log(combo, 2);
-                            break;
-                        case JudgmentDelta.Mode.Hard:
-                            RawScore += 200 + 20 * Mathf.Log(combo, 2);
-                            break;
-                    }
-                    PlayManager.HP += GaugeUpDownRate.Cool;
-                    break;
+                    RawScore += 170 + 17 * Mathf.Log(combo, 2);
+					PlayManager.HP += GaugeUpDownRate.Cool;
+
+					PercentCount += 1;
+					break;
                 case JudgmentType.Cool:
                     Cool++;
-                    switch (PlayManager.JudgmentMode)
-                    {
-                        case JudgmentDelta.Mode.Normal:
-                            RawScore += 100 + 10 * Mathf.Log(combo, 2);
-                            break;
-                        case JudgmentDelta.Mode.Easy:
-                            RawScore += 80 + 8 * Mathf.Log(combo, 2);
-                            break;
-                        case JudgmentDelta.Mode.Hard:
-                            RawScore += 100 + 10 * Mathf.Log(combo, 2);
-                            break;
-                    }
                     RawScore += 100 + 10 * Mathf.Log(combo, 2);
-                    PlayManager.HP += GaugeUpDownRate.Cool;
-                    break;
+					PercentCount += 0.9f;
+					PlayManager.HP += GaugeUpDownRate.Cool;
+					break;
                 case JudgmentType.Good:
                     Good++;
                     RawScore += 40 + 4 * Mathf.Log(combo, 2);
-                    PlayManager.HP += GaugeUpDownRate.Good;
-                    break;
+					PercentCount += 0.4f;
+					PlayManager.HP += GaugeUpDownRate.Good;
+					break;
                 case JudgmentType.Miss:
                     Miss++;
-                    PlayManager.HP += GaugeUpDownRate.Miss;
-                    break;
+					PercentCount += 0.1f;
+					PlayManager.HP += GaugeUpDownRate.Miss;
+					break;
                 case JudgmentType.Fail:
                     Fail++;
-                    PlayManager.HP += GaugeUpDownRate.Fail;
-                    break;
+					PercentCount -= 0.1f;
+					PlayManager.HP += GaugeUpDownRate.Fail;
+					break;
             }
-        }
+
+			TotalPercent++;
+			Percent = Mathf.Max(0f, (PercentCount / TotalPercent)) * 100f;
+		}
 
         public int GetScore()
         {
@@ -132,7 +124,12 @@ namespace EZR
             Miss = 0;
             Fail = 0;
             MaxCombo = 0;
-            IsClear = false;
+
+			PercentCount = 0f;
+			TotalPercent = 0;
+			Percent = 0f;
+
+			IsClear = false;
         }
     }
 }

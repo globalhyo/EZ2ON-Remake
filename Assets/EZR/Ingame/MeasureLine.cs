@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
 namespace EZR
 {
@@ -11,27 +10,14 @@ namespace EZR
 
         public static List<MeasureLine> MeasureLines = new List<MeasureLine>();
 
-        Image image;
         Animator anim;
         DisplayLoop displayLoop;
-        ObjectPool pool;
 
-        void Awake()
+        public void Init(int index, DisplayLoop loop)
         {
-            image = GetComponent<Image>();
-            anim = GetComponent<Animator>();
-        }
-
-        public void Init(int index, DisplayLoop loop, ObjectPool pool)
-        {
-            enabled = true;
-            image.enabled = true;
-
             this.index = index;
-
             displayLoop = loop;
-            this.pool = pool;
-
+            anim = GetComponent<Animator>();
             MeasureLines.Add(this);
 
             updateMeasure();
@@ -41,31 +27,33 @@ namespace EZR
         {
             updateMeasure();
 
-            if ((Index * PatternUtils.Pattern.TickPerMeasure) * (PlayManager.TimeLine.Beat * 0.25f) - PlayManager.Position < -(JudgmentDelta.Miss + 2))
+            if ((Index * PatternUtils.Pattern.TickPerMeasure) - PlayManager.Position < -(JudgmentDelta.Miss + 2))
             {
-                Recycle();
+                Destroy(gameObject);
             }
         }
 
         void updateMeasure()
         {
-            if (PlayManager.IsAutoPlay)
-            {
-                transform.localPosition = new Vector3(
-                    0,
-                    (float)((Index * PatternUtils.Pattern.TickPerMeasure * (PlayManager.TimeLine.Beat * 0.25f) - displayLoop.Position) * PlayManager.GetSpeed()) + (int)PlayManager.TargetLineType,
-                    0
-                );
-            }
-            else
-            {
-                transform.localPosition = new Vector3(
-                    0,
-                    (float)((Index * PatternUtils.Pattern.TickPerMeasure * (PlayManager.TimeLine.Beat * 0.25f) - displayLoop.Position) * PlayManager.GetSpeed()) + (int)PlayManager.TargetLineType - PlayManager.JudgmentOffset,
-                    0
-                );
-            }
-        }
+			transform.localPosition =
+				new Vector3(0, (float)((Index * PatternUtils.Pattern.TickPerMeasure - displayLoop.Position) * PlayManager.GetSpeed()) + (int)PlayManager.TargetLineType - PlayManager.JudgmentOffset, 0);
+			//if (PlayManager.IsAutoPlay)
+			//{
+			//    transform.localPosition = new Vector3(
+			//        0,
+			//        (float)((Index * PatternUtils.Pattern.TickPerMeasure - displayLoop.Position) * PlayManager.GetSpeed()) + (int)PlayManager.TargetLineType - PlayManager.JudgmentOffset,
+			//        0
+			//    );
+			//}
+			//else
+			//{
+			//    transform.localPosition = new Vector3(
+			//        0,
+			//        (float)((Index * PatternUtils.Pattern.TickPerMeasure - displayLoop.Position) * PlayManager.GetSpeed()) + (int)PlayManager.TargetLineType - PlayManager.JudgmentOffset,
+			//        0
+			//    );
+			//}
+		}
 
         public void PlayAnim()
         {
@@ -76,21 +64,6 @@ namespace EZR
         {
             if (MeasureLines.Contains(this))
                 MeasureLines.Remove(this);
-        }
-
-        public void Recycle()
-        {
-            if (MeasureLines.Contains(this))
-                MeasureLines.Remove(this);
-            enabled = false;
-            image.enabled = false;
-            pool.Put(gameObject);
-        }
-        public void Recycle(ObjectPool pool)
-        {
-            enabled = false;
-            image.enabled = false;
-            pool.Put(gameObject);
         }
     }
 }

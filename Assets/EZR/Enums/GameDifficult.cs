@@ -8,7 +8,6 @@ namespace EZR
             NM,
             HD,
             SHD,
-            EX,
             DJMAX_EZ,
             DJMAX_NM,
             DJMAX_HD,
@@ -28,8 +27,6 @@ namespace EZR
                     return "-hd";
                 case Difficult.SHD:
                     return "-shd";
-                case Difficult.EX:
-                    return "-ex";
                 case Difficult.DJMAX_EZ:
                     return "_ez";
                 case Difficult.DJMAX_NM:
@@ -57,8 +54,6 @@ namespace EZR
                     return "Hard mix";
                 case Difficult.SHD:
                     return "SuperHard mix";
-                case Difficult.EX:
-                    return "Extreme mix";
                 case Difficult.DJMAX_EZ:
                     return "Easy mode";
                 case Difficult.DJMAX_NM:

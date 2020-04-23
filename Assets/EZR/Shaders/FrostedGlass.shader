@@ -5,8 +5,7 @@ Shader "Unlit/FrostedGlass"
     Properties
     {
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
-        _Radius("Radius", Range(1, 51)) = 1
-        _Scale("Scale", Range(0, 10)) = 1
+        _Radius("Radius", Range(1, 255)) = 1
     }
 
     Category
@@ -59,24 +58,26 @@ Shader "Unlit/FrostedGlass"
                 sampler2D _GrabTexture;
                 float4 _GrabTexture_TexelSize;
                 float _Radius;
-                float _Scale;
-
-                inline float calculateGaussWeight(float sigma,float index){
-                    return (1 / sqrt(2 * 3.14159265359 * (sigma * sigma)) * pow(2.71828182846, -((index * index) / (2 * (sigma * sigma)))));
-                }
 
                 half4 frag(v2f i) : COLOR
                 {
+                    half4 sum = half4(0,0,0,0);
+
                     #define GRABXYPIXEL(kernelx, kernely) tex2Dproj( _GrabTexture, UNITY_PROJ_COORD(float4(i.uvgrab.x + _GrabTexture_TexelSize.x * kernelx, i.uvgrab.y + _GrabTexture_TexelSize.y * kernely, i.uvgrab.z, i.uvgrab.w)))
 
-                    half4 sum = GRABXYPIXEL(0, 0) * calculateGaussWeight(_Radius, 0);
+                    sum += GRABXYPIXEL(0.0, 0.0);
+                    int measurments = 1;
 
-                    for(int index = 1; index < _Radius * 5; index++){
-                        sum += GRABXYPIXEL(index * _Scale, 0) * calculateGaussWeight(_Radius, index);
-                        sum += GRABXYPIXEL(-index * _Scale, 0) * calculateGaussWeight(_Radius, index);
+                    for (float range = 0.1f; range <= _Radius; range += 0.1f)
+                    {
+                        sum += GRABXYPIXEL(range, range);
+                        sum += GRABXYPIXEL(range, -range);
+                        sum += GRABXYPIXEL(-range, range);
+                        sum += GRABXYPIXEL(-range, -range);
+                        measurments += 4;
                     }
 
-                    return sum;
+                    return sum / measurments;
                 }
                 ENDCG
             }
@@ -124,24 +125,28 @@ Shader "Unlit/FrostedGlass"
                 sampler2D _GrabTexture;
                 float4 _GrabTexture_TexelSize;
                 float _Radius;
-                float _Scale;
-
-                inline float calculateGaussWeight(float sigma,float index){
-                    return (1 / sqrt(2 * 3.14159265359 * (sigma * sigma)) * pow(2.71828182846, -((index * index) / (2 * (sigma * sigma)))));
-                }
 
                 half4 frag(v2f i) : COLOR
                 {
+
+                    half4 sum = half4(0,0,0,0);
+                    float radius = 1.41421356237 * _Radius;
+
                     #define GRABXYPIXEL(kernelx, kernely) tex2Dproj( _GrabTexture, UNITY_PROJ_COORD(float4(i.uvgrab.x + _GrabTexture_TexelSize.x * kernelx, i.uvgrab.y + _GrabTexture_TexelSize.y * kernely, i.uvgrab.z, i.uvgrab.w)))
 
-                    half4 sum = GRABXYPIXEL(0, 0) * calculateGaussWeight(_Radius, 0);
+                    sum += GRABXYPIXEL(0.0, 0.0);
+                    int measurments = 1;
 
-                    for(int index = 1; index < _Radius * 5; index++){
-                        sum += GRABXYPIXEL(0, index * _Scale) * calculateGaussWeight(_Radius, index);
-                        sum += GRABXYPIXEL(0, -index * _Scale) * calculateGaussWeight(_Radius, index);
+                    for (float range = 1.41421356237f; range <= radius * 1.41; range += 1.41421356237f)
+                    {
+                        sum += GRABXYPIXEL(range, 0);
+                        sum += GRABXYPIXEL(-range, 0);
+                        sum += GRABXYPIXEL(0, range);
+                        sum += GRABXYPIXEL(0, -range);
+                        measurments += 4;
                     }
 
-                    return sum;
+                    return sum / measurments;
                 }
                 ENDCG
             }
