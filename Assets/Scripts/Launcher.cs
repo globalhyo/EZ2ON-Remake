@@ -12,14 +12,17 @@ public class Launcher : MonoBehaviour
     private void Awake()
     {
         EZR.Master.Version = Settings.Version;
-        if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows)
-        {
-            if (System.Environment.OSVersion.Version.Major <= 6 && System.Environment.OSVersion.Version.Minor <= 1)
-            {
-                EZR.Master.IsOldWin = true;
-            }
-        }
-        EZR.Master.GameResourcesFolder =
+		if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows)
+		{
+			if (System.Environment.OSVersion.Version.Major <= 6 && System.Environment.OSVersion.Version.Minor <= 1)
+			{
+				EZR.Master.IsOldWin = true;
+			}
+		}
+
+		EZR.Master.IsOldWin = true;
+
+		EZR.Master.GameResourcesFolder =
          EZR.Master.IsDebug ?
          Settings.devGameResourcesFolder :
          Path.Combine(
