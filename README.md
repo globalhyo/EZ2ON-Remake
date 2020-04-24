@@ -1,4 +1,4 @@
-# EZ2ON-Remake
+# EZ2OFF
 Unity for EZ2ON
 
 ## Video Demo
@@ -8,4 +8,5 @@ Unity for EZ2ON
 </p>
 https://www.youtube.com/watch?v=RfUoq4MgdE4
 
-###### EZ2ON Official client download: https://mega.nz/#F!n88A1BjA!APvm7Sq9ILpcd3qZy-K4aQ!S8FmFSZa
+###### EZ2OFF Official client download: https://github.com/gameoldboy/EZ2ON-Remake/releases
+###### MusicPack download: https://drive.google.com/open?id=1MEF9Rq--GmBVJOtYzTaJF7gAMoQum0QR
