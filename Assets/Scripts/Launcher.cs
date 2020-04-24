@@ -20,8 +20,6 @@ public class Launcher : MonoBehaviour
 			}
 		}
 
-		EZR.Master.IsOldWin = true;
-
 		EZR.Master.GameResourcesFolder =
          EZR.Master.IsDebug ?
          Settings.devGameResourcesFolder :
