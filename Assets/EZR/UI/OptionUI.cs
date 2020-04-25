@@ -273,7 +273,7 @@ public class OptionUI : MonoBehaviour
 		switch (toggle.name)
 		{
 			case "ChkBoxEasy":
-				option.JudgeLevel = 1f;
+				option.JudgeLevel = 1.2f;
 				break;
 			case "ChkBoxNormal":
 				option.JudgeLevel = 0.8f;

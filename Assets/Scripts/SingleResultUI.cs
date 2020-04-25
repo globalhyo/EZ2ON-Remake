@@ -108,7 +108,8 @@ public class SingleResultUI : MonoBehaviour
         transform.Find("ResultGroup/Bonus/Add").GetComponent<Text>().text = "+" + (int)bonus;
         var score = EZR.PlayManager.Score.GetScore();
         transform.Find("ResultGroup/Score").GetComponent<Text>().text = score.ToString();
-        transform.Find("ResultGroup/Exp").gameObject.SetActive(false);
+		transform.Find("ResultGroup/Percent").GetComponent<Text>().text = string.Format("{0:0.00}%", EZR.PlayManager.Score.Percent);
+		transform.Find("ResultGroup/Exp").gameObject.SetActive(false);
         // TODO
         // transform.Find("ResultGroup/Exp").GetComponent<Text>().text =
         var bestScore = EZR.UserSaveData.GetScore(EZR.PlayManager.SongName, EZR.PlayManager.GameType, EZR.PlayManager.GameMode, EZR.PlayManager.GameDifficult);

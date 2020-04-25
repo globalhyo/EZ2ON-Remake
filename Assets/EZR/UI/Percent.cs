@@ -17,7 +17,10 @@ public class Percent : MonoBehaviour
 
 	/* [PROTECTED && PRIVATE VARIABLE]		*/
 
+	private Animation _animation;
 	private Text _text_Percent;
+
+	private float _lastPercent;
 	private bool _isRequireUpdate;
 
 	/*----------------[PUBLIC METHOD]------------------------------*/
@@ -28,6 +31,7 @@ public class Percent : MonoBehaviour
 	private void Awake()
 	{
 		_text_Percent = GetComponent<Text>();
+		_animation = GetComponent<Animation>();
 	}
 
 	private void Start()
@@ -49,7 +53,13 @@ public class Percent : MonoBehaviour
 	{
 		if (_isRequireUpdate)
 		{
-			_text_Percent.text = string.Format("{0:0.00}", EZR.PlayManager.Score.Percent);
+			float percent = EZR.PlayManager.Score.Percent;
+			_text_Percent.text = string.Format("{0:0.00}", percent);
+
+			if (percent > _lastPercent)
+				_animation.Play();
+
+			_lastPercent = percent;
 			_isRequireUpdate = false;
 		}
 	}

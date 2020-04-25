@@ -81,6 +81,6 @@ public class PersistentCanvas : MonoBehaviour
 
 	private void OnGUI()
 	{
-		GUI.Label(new Rect(0, 0, 60, 100), "Major: " + System.Environment.OSVersion.Version.Major + "\nMinor: " + System.Environment.OSVersion.Version.Minor);
+		
 	}
 }
