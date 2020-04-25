@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Video;
 using PatternUtils;
 using System.IO;
+using RenderHeads.Media.AVProVideo;
 
 namespace EZR
 {
@@ -59,10 +59,10 @@ namespace EZR
         int[] currentIndex;
         Queue<NoteInLine>[] noteInLines;
 
-        VideoPlayer videoPlayer;
-        HTC.UnityPlugin.Multimedia.ViveMediaDecoder viveMediaDecoder;
+		private MediaPlayer mediaPlayer;
+		private DisplayUGUI displayUGUI;
 
-        GameObject autoObj;
+		private GameObject autoObj;
 
         void Start()
         {
@@ -199,9 +199,8 @@ namespace EZR
                 noteInLines[i] = new Queue<NoteInLine>();
             }
 
-            viveMediaDecoder = GameObject.Find("Canvas").transform.Find("BGA").GetComponent<HTC.UnityPlugin.Multimedia.ViveMediaDecoder>();
-            videoPlayer = GameObject.Find("Canvas").transform.Find("BGA").GetComponent<VideoPlayer>();
-			videoPlayer.playbackSpeed = PlayManager.PlaybackSpeed;
+			mediaPlayer = GameObject.Find("MediaPlayer").GetComponent<MediaPlayer>();
+			displayUGUI = GameObject.Find("Canvas").transform.Find("BGA").GetComponent<DisplayUGUI>();
 
 			string bgaUrl = Path.Combine(
                 Master.GameResourcesFolder,
@@ -210,52 +209,31 @@ namespace EZR
                 PlayManager.SongName + ".mp4"
             );
             string genericBgaUrl = Path.Combine(Master.GameResourcesFolder, "GenericBGA.mp4");
+			if (File.Exists(bgaUrl))
+			{
+				// 初始化BGA
+				if (Master.IsOldWin)
+					mediaPlayer.PlatformOptionsWindows.videoApi = Windows.VideoApi.DirectShow;
 
-            if (File.Exists(bgaUrl))
-            {
-                // 初始化BGA
-                if (Master.IsOldWin)
-                {
-                    Destroy(videoPlayer);
-                    viveMediaDecoder.initDecoder(bgaUrl);
-                }
-                else
-                {
-                    videoPlayer.GetComponent<RawImage>().material = null;
-                    Destroy(viveMediaDecoder);
-                    videoPlayer.url = bgaUrl;
-                    videoPlayer.Prepare();
-                }
-            }
-            else if (File.Exists(genericBgaUrl))
-            {
-                // fallback通用bga
-                if (Master.IsOldWin)
-                {
-                    Destroy(videoPlayer);
-                    viveMediaDecoder.initDecoder(genericBgaUrl);
-                    viveMediaDecoder.onVideoEnd.AddListener(() =>
-                    {
-                        viveMediaDecoder.replay();
-                    });
-                }
-                else
-                {
-                    videoPlayer.GetComponent<RawImage>().material = null;
-                    Destroy(viveMediaDecoder);
-                    videoPlayer.url = genericBgaUrl;
-                    videoPlayer.Prepare();
-                    videoPlayer.isLooping = true;
-                }
-            }
-            else
-            {
-                Destroy(videoPlayer);
-                Destroy(viveMediaDecoder);
-            }
+				mediaPlayer.OpenVideoFromFile(MediaPlayer.FileLocation.AbsolutePathOrURL, bgaUrl, false);
+			}
+			else if (File.Exists(genericBgaUrl))
+			{
+				// fallback通用bga
+				if (Master.IsOldWin)
+					mediaPlayer.PlatformOptionsWindows.videoApi = Windows.VideoApi.DirectShow;
 
-            // 找毛玻璃
-            var frostedGlass = panel.transform.Find("FrostedGlass").gameObject;
+				mediaPlayer.OpenVideoFromFile(MediaPlayer.FileLocation.AbsolutePathOrURL, genericBgaUrl, false);
+				mediaPlayer.Control.SetLooping(true);
+			}
+			else
+			{
+				Destroy(mediaPlayer);
+				Destroy(displayUGUI);
+			}
+
+			// 找毛玻璃
+			var frostedGlass = panel.transform.Find("FrostedGlass").gameObject;
             frostedGlass.SetActive(option.FrostedGlassEffect);
 
             // 找 auto play 对象
@@ -264,8 +242,8 @@ namespace EZR
 			// BGA
 			if (option.ShowBGA == false)
 			{
-				Destroy(videoPlayer);
-				Destroy(viveMediaDecoder);
+				Destroy(mediaPlayer);
+				Destroy(displayUGUI);
 			}
 
 			// 투명도 조절
@@ -296,17 +274,13 @@ namespace EZR
             PlayManager.GameMode < EZR.GameMode.Mode.FourKey) &&
             PlayManager.BGADelay <= 0)
             {
-                if (viveMediaDecoder != null)
-                {
-                    viveMediaDecoder.startDecoding();
-                    viveMediaDecoder.setSeekTime(-PlayManager.BGADelay);
-                }
-                if (videoPlayer != null)
-                {
-                    videoPlayer.Play();
-                    videoPlayer.time = -PlayManager.BGADelay;
-                }
-            }
+				if (mediaPlayer != null && displayUGUI != null)
+				{
+					mediaPlayer.Control.Play();
+					displayUGUI.color = Color.white;
+					mediaPlayer.Control.Seek(-PlayManager.BGADelay * 1000);
+				}
+			}
         }
 
         void loopStop()
@@ -340,11 +314,9 @@ namespace EZR
             time = 0;
             bgaPlayed = false;
 
-            if (viveMediaDecoder != null)
-                viveMediaDecoder.setPause();
-            if (videoPlayer != null)
-                videoPlayer.Pause();
-        }
+			if (mediaPlayer != null)
+				mediaPlayer.Control.Pause();
+		}
 
         public void Stop()
         {
@@ -359,23 +331,15 @@ namespace EZR
             if (!isStarted)
             {
                 readyFrame++;
-                if (readyFrame > 10)
-                {
-                    if (viveMediaDecoder != null)
-                    {
-                        if (viveMediaDecoder.getDecoderState() ==
-                        HTC.UnityPlugin.Multimedia.ViveMediaDecoder.DecoderState.INITIALIZED ||
-                        viveMediaDecoder.getDecoderState() ==
-                        HTC.UnityPlugin.Multimedia.ViveMediaDecoder.DecoderState.INIT_FAIL)
-                            StartPlay();
-                    }
-                    if (videoPlayer != null)
-                    {
-                        if (videoPlayer.isPrepared) StartPlay();
-                    }
-                    if (viveMediaDecoder == null && videoPlayer == null) StartPlay();
-                }
-            }
+				if (readyFrame > 10)
+				{
+					if (mediaPlayer != null && displayUGUI != null)
+					{
+						if (mediaPlayer.VideoOpened) StartPlay();
+					}
+					else StartPlay();
+				}
+			}
 
 
             if (grooveDisplay)
@@ -431,18 +395,19 @@ namespace EZR
                 }
             }
 
-            // 背景动画trigger
-            if (PlayManager.IsPlayBGA)
-            {
-                PlayManager.IsPlayBGA = false;
-                if (viveMediaDecoder != null)
-                    viveMediaDecoder.startDecoding();
-                if (videoPlayer != null)
-                    videoPlayer.Play();
-            }
+			// 背景动画trigger
+			if (PlayManager.IsPlayBGA)
+			{
+				PlayManager.IsPlayBGA = false;
+				if (mediaPlayer != null && displayUGUI != null)
+				{
+					mediaPlayer.Control.Play();
+					displayUGUI.color = Color.white;
+				}
+			}
 
-            // Unity smoothDeltaTime计算Position 用于消除音符抖动
-            if (isStarted)
+			// Unity smoothDeltaTime计算Position 用于消除音符抖动
+			if (isStarted)
             {
                 PositionDelta = Time.smoothDeltaTime * PlayManager.TickPerSecond;
                 position += PositionDelta;
@@ -451,15 +416,16 @@ namespace EZR
                 time += Time.deltaTime;
                 if (!bgaPlayed && !(PlayManager.GameType == GameType.DJMAX &&
                 PlayManager.GameMode < EZR.GameMode.Mode.FourKey) &&
-                PlayManager.BGADelay > 0 && PlayManager.BGADelay <= time)
-                {
-                    if (viveMediaDecoder != null)
-                        viveMediaDecoder.startDecoding();
-                    if (videoPlayer != null)
-                        videoPlayer.Play();
-                    bgaPlayed = true;
-                }
-            }
+				PlayManager.BGADelay > 0 && PlayManager.BGADelay <= time)
+				{
+					if (mediaPlayer != null && displayUGUI != null)
+					{
+						mediaPlayer.Control.Play();
+						displayUGUI.color = Color.white;
+					}
+					bgaPlayed = true;
+				}
+			}
 
             // 插值下落速度
             PlayManager.RealFallSpeed = Mathf.Lerp(PlayManager.RealFallSpeed, PlayManager.FallSpeed,
@@ -534,16 +500,6 @@ namespace EZR
             scoreText.text = Mathf.Round(PlayManager.Score.RawScore).ToString("0000000");
             // 最大连击
             maxComboText.text = PlayManager.Score.MaxCombo.ToString("00000");
-
-            // 修复BGA重复播放问题
-            if (videoPlayer != null &&
-            !videoPlayer.isLooping &&
-            !videoPlayer.isPaused &&
-            videoPlayer.frameCount > 0 &&
-            (ulong)videoPlayer.frame == videoPlayer.frameCount)
-            {
-                videoPlayer.Pause();
-            }
         }
 
         void groove()
