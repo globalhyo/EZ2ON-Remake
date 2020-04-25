@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EZR_Settings
   m_EditorClassIdentifier: 
   Version: 5
-  devGameResourcesFolder: E:\EZ2ON_Remake_EZRData
+  devGameResourcesFolder: E:\EZRData
   LaunchScene: SingleSelectSongs
   MessageBox: {fileID: 529640093577671964, guid: 8d455199744e63a4bb90187a34b065a7,
     type: 3}

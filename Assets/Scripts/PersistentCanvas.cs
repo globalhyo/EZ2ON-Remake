@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using EZR;
 
 public class PersistentCanvas : MonoBehaviour
@@ -18,6 +19,7 @@ public class PersistentCanvas : MonoBehaviour
 	public static PersistentCanvas Instance;
 
 	public Text Text_FPS;
+	public RawImage EyeCatchFader;
 
 	private Option _option;
 
@@ -28,8 +30,32 @@ public class PersistentCanvas : MonoBehaviour
 
 	/*----------------[PUBLIC METHOD]------------------------------*/
 
+	public void LoadPlayScene()
+	{
+		StartCoroutine(CoLoadPlayScene());
+	}
+
 
 	/*----------------[PROTECTED && PRIVATE METHOD]----------------*/
+
+	private IEnumerator CoLoadPlayScene()
+	{
+		AsyncOperation sceneLoad = SceneManager.LoadSceneAsync("SinglePlay");
+		sceneLoad.allowSceneActivation = true;
+
+		while (sceneLoad.isDone == false)
+			yield return null;
+
+		EyeCatchFader.color = Color.white;
+
+		Color color = EyeCatchFader.color;
+		while (color.a > 0f)
+		{
+			color.a = Mathf.Clamp01(color.a - (Time.deltaTime * 2f));
+			EyeCatchFader.color = color;
+			yield return null;
+		}
+	}
 
 	private void Awake()
 	{
@@ -51,5 +77,10 @@ public class PersistentCanvas : MonoBehaviour
 
 			_timeleft -= Time.deltaTime;
 		}
+	}
+
+	private void OnGUI()
+	{
+		GUI.Label(new Rect(0, 0, 60, 100), "Major: " + System.Environment.OSVersion.Version.Major + "\nMinor: " + System.Environment.OSVersion.Version.Minor);
 	}
 }

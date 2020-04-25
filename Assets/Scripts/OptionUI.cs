@@ -177,12 +177,15 @@ public class OptionUI : MonoBehaviour
 		transform.Find("GroupSkin/BarAlpha/SlideHPAlpha/HPAlpha").GetComponent<Slider>().value = option.HPAlpha;
 		transform.Find("GroupSkin/BarAlpha/SlideJudgeAlpha/JudgeAlpha").GetComponent<Slider>().value = option.JudgeAlpha;
 		transform.Find("GroupSkin/BarAlpha/SlideComboAlpha/ComboAlpha").GetComponent<Slider>().value = option.ComboAlpha;
+		transform.Find("GroupBGA/BarPanelBGA/SliderBGABright/BGABright").GetComponent<Slider>().value = option.BGABright;
 
 		transform.Find("GroupSkin/BarAlpha/SlideGearAlpha/GearAlpha").GetComponent<Slider>().transform.Find("Text_Slider").GetComponent<Text>().text = string.Format("{0}%", option.GearAlpha);
 		transform.Find("GroupSkin/BarAlpha/SlideBGAlpha/BGAlpha").GetComponent<Slider>().transform.Find("Text_Slider").GetComponent<Text>().text = string.Format("{0}%", option.BGAlpha);
 		transform.Find("GroupSkin/BarAlpha/SlideHPAlpha/HPAlpha").GetComponent<Slider>().transform.Find("Text_Slider").GetComponent<Text>().text = string.Format("{0}%", option.HPAlpha);
 		transform.Find("GroupSkin/BarAlpha/SlideJudgeAlpha/JudgeAlpha").GetComponent<Slider>().transform.Find("Text_Slider").GetComponent<Text>().text = string.Format("{0}%", option.JudgeAlpha);
 		transform.Find("GroupSkin/BarAlpha/SlideComboAlpha/ComboAlpha").GetComponent<Slider>().transform.Find("Text_Slider").GetComponent<Text>().text = string.Format("{0}%", option.ComboAlpha);
+		transform.Find("GroupBGA/BarPanelBGA/SliderBGABright/BGABright").GetComponent<Slider>().transform.Find("Text_Slider").GetComponent<Text>().text = string.Format("{0}%", option.BGABright);
+
 
 		var panelBGA = transform.Find("GroupBGA/BarPanelBGA");
 		panelBGA.Find("ChkBoxBGA").GetComponent<Toggle>().isOn = option.ShowBGA;
@@ -420,6 +423,20 @@ public class OptionUI : MonoBehaviour
 				break;
 			case "ComboAlpha":
 				option.ComboAlpha = (int)slider.value;
+				text_Slider.text = string.Format("{0}%", slider.value);
+				break;
+		}
+	}
+
+	public void SliderBright(float value)
+	{
+		var slider = EventSystem.current.currentSelectedGameObject.GetComponent<Slider>();
+		if (slider == null) return;
+		Text text_Slider = slider.transform.Find("Text_Slider").GetComponent<Text>();
+		switch (slider.name)
+		{
+			case "BGABright":
+				option.BGABright = (int)slider.value;
 				text_Slider.text = string.Format("{0}%", slider.value);
 				break;
 		}

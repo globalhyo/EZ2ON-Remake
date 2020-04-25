@@ -184,6 +184,7 @@ namespace EZR
 			option.HPAlpha = (int)(UserData["setting"]["HPAlpha"] ?? option.HPAlpha);
 			option.JudgeAlpha = (int)(UserData["setting"]["JudgeAlpha"] ?? option.JudgeAlpha);
 			option.ComboAlpha = (int)(UserData["setting"]["ComboAlpha"] ?? option.ComboAlpha);
+			option.BGABright = (int)(UserData["setting"]["BGABright"] ?? option.BGABright);
 
 			if (UserData["setting"]["KeyConfig"] == null) return option;
 
@@ -240,6 +241,7 @@ namespace EZR
 			jobj["HPAlpha"] = option.HPAlpha;
 			jobj["JudgeAlpha"] = option.JudgeAlpha;
 			jobj["ComboAlpha"] = option.ComboAlpha;
+			jobj["BGABright"] = option.BGABright;
 
 			if (jobj.ContainsKey("KeyConfig") == false)
 				jobj["KeyConfig"] = new JObject();

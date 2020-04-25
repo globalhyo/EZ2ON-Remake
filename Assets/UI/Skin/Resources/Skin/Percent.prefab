@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4079562189822720996}
   - component: {fileID: 9205476551735163664}
   - component: {fileID: 5402038884235186373}
-  - component: {fileID: 3372648581990270591}
   m_Layer: 5
   m_Name: Percent
   m_TagString: Untagged
@@ -27,7 +26,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6896241130658513012}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -37,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -8, y: 108}
-  m_SizeDelta: {x: 64.3, y: 28.26}
+  m_SizeDelta: {x: 64.16, y: 40.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4079562189822720996
 CanvasRenderer:
@@ -60,14 +59,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.7176471}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.78431374}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 14e5e912366ee164d8f096b698d67f29, type: 3}
-    m_FontSize: 18
+    m_Font: {fileID: 12800000, guid: a26d0eac14816a64790e7c1b2183975e, type: 3}
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 0
@@ -91,18 +90,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d72064fa6fe934449b9cd00182fedb29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3372648581990270591
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6896241130658513012}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.43137255}
-  m_EffectDistance: {x: 1, y: -1}
-  m_UseGraphicAlpha: 1

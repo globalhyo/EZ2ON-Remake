@@ -64,6 +64,11 @@ namespace EZR
 
 		private GameObject autoObj;
 
+		public void OnCallbackMediaPlayer(MediaPlayer mediaPlayer, MediaPlayerEvent.EventType type, ErrorCode code)
+		{
+			//_text_mediaDebug.text += type.ToString() + ", " + code.ToString() + "\n";
+		}
+
         void Start()
         {
             // 读取设置
@@ -200,7 +205,11 @@ namespace EZR
             }
 
 			mediaPlayer = GameObject.Find("MediaPlayer").GetComponent<MediaPlayer>();
-			displayUGUI = GameObject.Find("Canvas").transform.Find("BGA").GetComponent<DisplayUGUI>();
+
+			GameObject canvas = GameObject.Find("Canvas");
+			displayUGUI = canvas.transform.Find("BGA").GetComponent<DisplayUGUI>();
+			Image bgaBright = canvas.transform.Find("BGA_Bright").GetComponent<Image>();
+			RawImage eyeCatch = canvas.transform.Find("EyeCatch").GetComponent<RawImage>();
 
 			string bgaUrl = Path.Combine(
                 Master.GameResourcesFolder,
@@ -240,6 +249,12 @@ namespace EZR
             autoObj = panel.transform.Find("Auto").gameObject;
 
 			// BGA
+			float bgaRGB = 1f - (option.BGABright / 100f);
+			bgaBright.color = new Color(0, 0, 0, bgaRGB);
+
+			eyeCatch.gameObject.SetActive(option.ShowBGA == false);
+			eyeCatch.texture = PersistentCanvas.Instance.EyeCatchFader.texture;
+
 			if (option.ShowBGA == false)
 			{
 				Destroy(mediaPlayer);
@@ -276,8 +291,8 @@ namespace EZR
             {
 				if (mediaPlayer != null && displayUGUI != null)
 				{
+					mediaPlayer.Control.SetPlaybackRate(EZR.PlayManager.PlaybackSpeed);
 					mediaPlayer.Control.Play();
-					displayUGUI.color = Color.white;
 					mediaPlayer.Control.Seek(-PlayManager.BGADelay * 1000);
 				}
 			}
@@ -335,7 +350,10 @@ namespace EZR
 				{
 					if (mediaPlayer != null && displayUGUI != null)
 					{
-						if (mediaPlayer.VideoOpened) StartPlay();
+						if (mediaPlayer.VideoOpened)
+						{
+							StartPlay();
+						}
 					}
 					else StartPlay();
 				}
@@ -401,6 +419,7 @@ namespace EZR
 				PlayManager.IsPlayBGA = false;
 				if (mediaPlayer != null && displayUGUI != null)
 				{
+					mediaPlayer.Control.SetPlaybackRate(EZR.PlayManager.PlaybackSpeed);
 					mediaPlayer.Control.Play();
 					displayUGUI.color = Color.white;
 				}
@@ -420,6 +439,7 @@ namespace EZR
 				{
 					if (mediaPlayer != null && displayUGUI != null)
 					{
+						mediaPlayer.Control.SetPlaybackRate(EZR.PlayManager.PlaybackSpeed);
 						mediaPlayer.Control.Play();
 						displayUGUI.color = Color.white;
 					}

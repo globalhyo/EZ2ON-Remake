@@ -990,10 +990,12 @@ public class SingleSelectSongsUI : MonoBehaviour
 
         var eyecatch = Instantiate(Eyecatch);
         eyecatch.transform.SetParent(transform.parent, false);
-        if (buffer != null)
+		if (buffer != null)
         {
-            eyecatch.GetComponent<RawImage>().texture = EZR.ImageLoader.Load(buffer, fileName);
-        }
+			RawImage rawImage = eyecatch.GetComponent<RawImage>();
+			rawImage.texture = EZR.ImageLoader.Load(buffer, fileName);
+			PersistentCanvas.Instance.EyeCatchFader.texture = rawImage.texture;
+		}
 
         var anim = eyecatch.GetComponent<Animation>();
         anim.Play("Eyecatch");
@@ -1006,7 +1008,7 @@ public class SingleSelectSongsUI : MonoBehaviour
         EZR.PlayManager.GameDifficult = currentDifficult;
         EZR.PlayManager.FallSpeed = speed;
 
-        if (delayPlay != null) StopCoroutine(delayPlay);
+		if (delayPlay != null) StopCoroutine(delayPlay);
 
         if (currentType == EZR.GameType.DJMAX)
             EZR.MemorySound.PlaySound("Decide");
@@ -1022,8 +1024,9 @@ public class SingleSelectSongsUI : MonoBehaviour
         }
         EZR.MemorySound.StopSound();
         EZR.MemorySound.StopStream();
-        SceneManager.LoadScene("SinglePlay");
-    }
+
+		PersistentCanvas.Instance.LoadPlayScene();
+	}
 
     IEnumerator discOut(Animation anim)
     {

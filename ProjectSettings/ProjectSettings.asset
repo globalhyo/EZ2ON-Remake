@@ -119,7 +119,7 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleVersion: 1
+  bundleVersion: beta2
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -566,7 +566,8 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   webGLWasmStreaming: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    1: AVPROVIDEO_DISABLE_DEBUG_GUI;AVPROVIDEO_DISABLE_LOGGING
   platformArchitecture: {}
   scriptingBackend:
     Standalone: 1

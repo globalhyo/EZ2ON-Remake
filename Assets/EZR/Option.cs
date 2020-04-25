@@ -50,6 +50,7 @@ namespace EZR
 		public int HPAlpha = 100;
 		public int JudgeAlpha = 100;
 		public int ComboAlpha = 100;
+		public int BGABright = 100;
 
 		public int[,] KeyMapping = new int[,]
 		{
