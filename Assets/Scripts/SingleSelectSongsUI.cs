@@ -101,8 +101,8 @@ public class SingleSelectSongsUI : MonoBehaviour
         updateGameModeButton();
         updateGameType();
         updateList();
-        updateBtnSpeed();
-    }
+		LoadSpeed();
+	}
 
     // 过滤歌曲
     void filterSongs()
@@ -436,7 +436,8 @@ public class SingleSelectSongsUI : MonoBehaviour
         }
         sortListByName(EZR.SongsList.IsAscending);
         updateList();
-        EZR.MemorySound.PlaySound("e_click");
+
+		EZR.MemorySound.PlaySound("e_click");
     }
 
     public void BtnSongsDifficult()
@@ -509,8 +510,9 @@ public class SingleSelectSongsUI : MonoBehaviour
         focusOnBtnDifficult();
         btn.SetSelected(true);
         updateList();
+		LoadSpeed();
 
-        EZR.MemorySound.PlaySound("e_page");
+		EZR.MemorySound.PlaySound("e_page");
     }
 
     void updateGameModeButton()
@@ -579,6 +581,12 @@ public class SingleSelectSongsUI : MonoBehaviour
             currentDifficult = EZR.GameDifficult.Difficult.DJMAX_EZ;
         }
     }
+
+	private void LoadSpeed()
+	{
+		speed = EZR.UserSaveData.GetSpeed(currentSongName, currentMode);
+		updateBtnSpeed();
+	}
 
     void updateGameType()
     {
@@ -874,7 +882,8 @@ public class SingleSelectSongsUI : MonoBehaviour
         }
 
         transform.Find("MyBestScore/Text").GetComponent<Text>().text = EZR.UserSaveData.GetScore(currentSongName, currentType, info.GetCurrentMode(currentMode, currentDifficult), currentDifficult).ToString();
-    }
+		LoadSpeed();
+	}
 
     IEnumerator DelayPlayPreview(string songName)
     {
@@ -1014,7 +1023,10 @@ public class SingleSelectSongsUI : MonoBehaviour
             EZR.MemorySound.PlaySound("Decide");
         else
             EZR.MemorySound.PlaySound("e_start");
-    }
+
+		EZR.UserSaveData.SetSpeed(currentSongName, mode, speed);
+		EZR.UserSaveData.SaveData();
+	}
 
     IEnumerator startPlay(Animation anim)
     {

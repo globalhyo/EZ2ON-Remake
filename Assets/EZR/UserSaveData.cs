@@ -101,7 +101,43 @@ namespace EZR
             }
         }
 
-        public static int GetScore(string name, GameType type, GameMode.Mode mode, GameDifficult.Difficult diff)
+		static float DefaultSpeed = 2.0f;
+		public static float GetSpeed(string songName, GameMode.Mode mode)
+		{
+			string modeName = mode.ToString();
+
+			JObject jobj;
+			if (UserData.ContainsKey("mySongSpeed") == false) return DefaultSpeed;
+			jobj = (JObject)UserData["mySongSpeed"];
+
+			if (jobj.ContainsKey(songName) == false) return DefaultSpeed;
+			jobj = (JObject)jobj[songName];
+
+			if (jobj.ContainsKey(modeName) == false) return DefaultSpeed;
+
+			return (float)jobj[modeName];
+		}
+
+		public static void SetSpeed(string songName, GameMode.Mode mode, float speed)
+		{
+			string modeName = mode.ToString();
+
+			JObject jobj;
+			if (UserData.ContainsKey("mySongSpeed") == false)
+				UserData["mySongSpeed"] = new JObject();
+
+			jobj = (JObject)UserData["mySongSpeed"];
+
+			if (jobj.ContainsKey(songName) == false)
+				jobj[songName] = new JObject();
+
+			jobj = (JObject)jobj[songName];
+
+			jobj[modeName] = speed;
+		}
+
+
+		public static int GetScore(string name, GameType type, GameMode.Mode mode, GameDifficult.Difficult diff)
         {
             JObject jobj;
             if (!UserData.ContainsKey("myBestScore")) return 0;
