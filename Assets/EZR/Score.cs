@@ -98,7 +98,7 @@ namespace EZR
 
         public Grade GetGrade()
         {
-            var rate = (Kool + Cool) / (float)TotalNote;
+            var rate = (Percent / 100f);
             if (rate >= 0.98f) return Grade.APlus;
             else if (rate < 0.98f && rate >= 0.95f) return Grade.A;
             else if (rate < 0.95f && rate >= 0.88f) return Grade.B;
@@ -109,9 +109,13 @@ namespace EZR
 
         public Bonus GetBonus()
         {
-            if (Kool == TotalNote) return Bonus.AllKool;
-            if (Kool + Cool == TotalNote) return Bonus.AllCool;
-            if (MaxCombo == TotalNote) return Bonus.AllCombo;
+			if (Kool == TotalNote)
+				return Bonus.AllKool;
+            if (Kool + Cool == TotalNote)
+				return Bonus.AllCool;
+            if (MaxCombo == TotalNote)
+				return Bonus.AllCombo;
+
             return Bonus.NoBonus;
         }
 

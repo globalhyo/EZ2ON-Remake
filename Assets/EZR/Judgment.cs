@@ -200,18 +200,30 @@ namespace EZR
                 else
                 {
                     noteInLine = null;
-                    if (PlayManager.TimeLines.Lines[keyId].Notes.Count > 0)
-                        note = PlayManager.TimeLines.Lines[keyId].Notes[Mathf.Min(PlayManager.TimeLines.LinesIndex[keyId], PlayManager.TimeLines.Lines[keyId].Notes.Count - 1)];
+
+					if (PlayManager.TimeLines.Lines[keyId].Notes.Count > 0)
+					{
+						note = PlayManager.TimeLines.Lines[keyId].Notes[Mathf.Min(PlayManager.TimeLines.LinesIndex[keyId], PlayManager.TimeLines.Lines[keyId].Notes.Count - 1)];
+					}
                     else
                         note = null;
                 }
 
                 FMOD.Channel? channel = null;
-                if (note != null)
-                    channel = MemorySound.PlaySound(note.id, note.vol, note.pan, MemorySound.Main, PlayManager.PlaybackSpeed);
+				if (note != null)
+				{
+					if (note.NoteSound != null)
+						((FMOD.Channel)note.NoteSound).stop();
+
+					channel = MemorySound.PlaySound(note.id, note.vol, note.pan, MemorySound.Main, PlayManager.PlaybackSpeed);
+					note.NoteSound = channel;
+				}
                 if (noteInLine != null && note.length > 6)
                 {
-                    noteInLine.NoteSound = channel;
+					if (noteInLine.NoteSound != null)
+						((FMOD.Channel)noteInLine.NoteSound).stop();
+
+					noteInLine.NoteSound = channel;
                 }
             }
             // 松开
@@ -227,8 +239,7 @@ namespace EZR
                     double judgmentDelta = noteInLine.Position + noteInLine.NoteLength - PlayManager.Position;
                     bool isFast = judgmentDelta > 0;
                     judgmentDelta = System.Math.Abs(judgmentDelta);
-                    if (judgmentDelta <= JudgmentDelta.GetJudgmentDelta(JudgmentType.Kool, 1)
-						|| judgmentDelta <= JudgmentDelta.GetJudgmentDelta(JudgmentType.Cool, 1))
+                    if (judgmentDelta <= JudgmentDelta.GetJudgmentDelta(JudgmentType.Kool, 1))
                     {
                         var delta = noteInLine.LongNoteCount - noteInLine.LongNoteCombo;
                         for (int j = 0; j < delta; j++)
@@ -238,8 +249,8 @@ namespace EZR
                             judgmentAnim.Play(noteInLine.LongNoteJudgment);
                             flarePlayList[keyId].Play(noteInLine.LongNoteJudgment);
                         }
-                        //if (!JudgmentDelta.CompareJudgmentDelta(judgmentDelta, JudgmentType.Kool, 1))
-                        //    judgmentAnim.ShowFastSlow(isFast);
+                        if (!JudgmentDelta.CompareJudgmentDelta(judgmentDelta, JudgmentType.Kool, 1))
+                            judgmentAnim.ShowFastSlow(isFast);
 
                         noteInLine.IsDestroy = true;
                     }

@@ -122,7 +122,7 @@ namespace EZR
                 var result = FMODUnity.RuntimeManager.CoreSystem.playSound(SoundList[id], group, true, out FMOD.Channel channel);
                 if (result == FMOD.RESULT.OK)
                 {
-                    channel.setVolume(vol);
+					channel.setVolume(vol);
                     channel.setPan(pan);
 					channel.setPitch(pitch);
 					channel.setPaused(false);

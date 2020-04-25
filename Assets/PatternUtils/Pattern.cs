@@ -32,7 +32,8 @@ namespace PatternUtils
             public float vol = 0;
             public float pan = 0;
             public int length = 0;
-        }
+			public FMOD.Channel? NoteSound;
+		}
         public class Track
         {
             public string name = "";
