@@ -57,7 +57,10 @@ public class Percent : MonoBehaviour
 			_text_Percent.text = string.Format("{0:0.00}", percent);
 
 			if (percent > _lastPercent)
+			{
+				_animation.Stop();
 				_animation.Play();
+			}
 
 			_lastPercent = percent;
 			_isRequireUpdate = false;
