@@ -42,7 +42,7 @@ namespace EZR
 		public bool ShowPercent = false;
 		public bool UiJudgeLine = false;
 		public VolumeClass Volume = new VolumeClass();
-		public float JudgeLevel = 0.8f;
+		public GameDifficult.JudgeDifficult JudgeDifficult =  GameDifficult.JudgeDifficult.NM;
 		public bool ShowJudgeList = false;
 
 		public int GearAlpha = 100;

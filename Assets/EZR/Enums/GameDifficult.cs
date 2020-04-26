@@ -1,8 +1,13 @@
 namespace EZR
 {
-    public class GameDifficult
+    public static class GameDifficult
     {
-        public enum Difficult
+		private const float JudgeEZ = 1.2f;
+		private const float JudgeNM = 0.8f;
+		private const float JudgeHD = 0.6f;
+		private const float JudgeEX = 0.4f;
+
+		public enum Difficult
         {
             EZ,
             NM,
@@ -14,6 +19,29 @@ namespace EZR
             DJMAX_MX,
             DJMAX_SC
         }
+
+		public enum JudgeDifficult
+		{
+			EZ,
+			NM,
+			HD,
+			EX
+		}
+
+		public static float GetJudge(this JudgeDifficult difficult)
+		{
+			switch (difficult)
+			{
+				default:
+					return JudgeEZ;
+				case JudgeDifficult.NM:
+					return JudgeNM;
+				case JudgeDifficult.HD:
+					return JudgeHD;
+				case JudgeDifficult.EX:
+					return JudgeEX;
+			}
+		}
 
         public static string GetString(Difficult difficult)
         {

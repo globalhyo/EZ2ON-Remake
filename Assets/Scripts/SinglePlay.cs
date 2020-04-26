@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using EZR;
 
 public class SinglePlay : MonoBehaviour
 {
@@ -21,7 +22,7 @@ public class SinglePlay : MonoBehaviour
 #endif
 
 		_option = EZR.UserSaveData.GetOption();
-		EZR.JudgmentDelta.GlobalScale = _option.JudgeLevel;
+		EZR.JudgmentDelta.GlobalScale = _option.JudgeDifficult.GetJudge();
 
 		EZR.PlayManager.Reset();
         EZR.PlayManager.LoadPattern();

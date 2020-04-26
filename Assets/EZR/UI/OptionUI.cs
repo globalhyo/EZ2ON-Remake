@@ -95,18 +95,18 @@ public class OptionUI : MonoBehaviour
 		}
 
 		var judge = transform.Find("GroupSystem/BarJudge");
-		switch (option.JudgeLevel)
+		switch (option.JudgeDifficult)
 		{
 			default:
 				judge.Find("ChkBoxEasy").GetComponent<Toggle>().isOn = true;
 				break;
-			case 0.8f:
+			case EZR.GameDifficult.JudgeDifficult.NM:
 				judge.Find("ChkBoxNormal").GetComponent<Toggle>().isOn = true;
 				break;
-			case 0.6f:
+			case EZR.GameDifficult.JudgeDifficult.HD:
 				judge.Find("ChkBoxHard").GetComponent<Toggle>().isOn = true;
 				break;
-			case 0.4f:
+			case EZR.GameDifficult.JudgeDifficult.EX:
 				judge.Find("ChkBoxEx").GetComponent<Toggle>().isOn = true;
 				break;
 		}
@@ -273,16 +273,16 @@ public class OptionUI : MonoBehaviour
 		switch (toggle.name)
 		{
 			case "ChkBoxEasy":
-				option.JudgeLevel = 1.2f;
+				option.JudgeDifficult = EZR.GameDifficult.JudgeDifficult.EZ;
 				break;
 			case "ChkBoxNormal":
-				option.JudgeLevel = 0.8f;
+				option.JudgeDifficult = EZR.GameDifficult.JudgeDifficult.NM;
 				break;
 			case "ChkBoxHard":
-				option.JudgeLevel = 0.6f;
+				option.JudgeDifficult = EZR.GameDifficult.JudgeDifficult.HD;
 				break;
 			case "ChkBoxEx":
-				option.JudgeLevel = 0.4f;
+				option.JudgeDifficult = EZR.GameDifficult.JudgeDifficult.EX;
 				break;
 		}
 	}

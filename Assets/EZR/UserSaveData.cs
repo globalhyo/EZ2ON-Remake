@@ -210,7 +210,7 @@ namespace EZR
 
 			option.ShowFPS = (bool)(UserData["setting"]["ShowFPS"] ?? option.ShowFPS);
 			option.ShowBGA = (bool)(UserData["setting"]["ShowBGA"] ?? option.ShowBGA);
-			option.JudgeLevel = (float)(UserData["setting"]["JudgeLevel"] ?? option.JudgeLevel);
+			option.JudgeDifficult = Utils.ParseEnum<GameDifficult.JudgeDifficult>((string)(UserData["setting"]["JudgeDifficult"] ?? option.JudgeDifficult.ToString()));
 			option.ShowJudgeList = (bool)(UserData["setting"]["ShowJudgeList"] ?? option.ShowJudgeList);
 			option.ShowPercent = (bool)(UserData["setting"]["ShowPercent"] ?? option.ShowPercent);
 			option.UiJudgeLine = (bool)(UserData["setting"]["UiJudgeLine"] ?? option.UiJudgeLine);
@@ -267,7 +267,7 @@ namespace EZR
 
 			jobj["ShowFPS"] = option.ShowFPS;
 			jobj["ShowBGA"] = option.ShowBGA;
-			jobj["JudgeLevel"] = option.JudgeLevel;
+			jobj["JudgeDifficult"] = option.JudgeDifficult.ToString();
 			jobj["ShowJudgeList"] = option.ShowJudgeList;
 			jobj["ShowPercent"] = option.ShowPercent;
 			jobj["UiJudgeLine"] = option.UiJudgeLine;
