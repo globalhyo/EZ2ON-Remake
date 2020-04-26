@@ -87,43 +87,44 @@ public class SinglePlay : MonoBehaviour
             finished(false);
         }
 
-        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
-        {
-            if (Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                speedAddSmall(0.01f);
-                if (speedPressedCoroutine != null) StopCoroutine(speedPressedCoroutine);
-                speedPressedCoroutine = StartCoroutine(speedPressed(0.01f));
-            }
-            else if (Input.GetKeyUp(KeyCode.UpArrow))
-            {
-                if (speedPressedCoroutine != null) StopCoroutine(speedPressedCoroutine);
-            }
-            if (Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                speedAddSmall(-0.01f);
-                if (speedPressedCoroutine != null) StopCoroutine(speedPressedCoroutine);
-                speedPressedCoroutine = StartCoroutine(speedPressed(-0.01f));
-            }
-            else if (Input.GetKeyUp(KeyCode.DownArrow))
-            {
-                if (speedPressedCoroutine != null) StopCoroutine(speedPressedCoroutine);
-            }
-        }
-        else
-        {
-            if (speedPressedCoroutine != null) StopCoroutine(speedPressedCoroutine);
-            if (Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                speedAdd(0.25f);
-            }
-            if (Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                speedAdd(-0.25f);
-            }
-        }
+		// Removed, Use keymapping
+		//if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+		//{
+		//    if (Input.GetKeyDown(KeyCode.UpArrow))
+		//    {
+		//        speedAddSmall(0.01f);
+		//        if (speedPressedCoroutine != null) StopCoroutine(speedPressedCoroutine);
+		//        speedPressedCoroutine = StartCoroutine(speedPressed(0.01f));
+		//    }
+		//    else if (Input.GetKeyUp(KeyCode.UpArrow))
+		//    {
+		//        if (speedPressedCoroutine != null) StopCoroutine(speedPressedCoroutine);
+		//    }
+		//    if (Input.GetKeyDown(KeyCode.DownArrow))
+		//    {
+		//        speedAddSmall(-0.01f);
+		//        if (speedPressedCoroutine != null) StopCoroutine(speedPressedCoroutine);
+		//        speedPressedCoroutine = StartCoroutine(speedPressed(-0.01f));
+		//    }
+		//    else if (Input.GetKeyUp(KeyCode.DownArrow))
+		//    {
+		//        if (speedPressedCoroutine != null) StopCoroutine(speedPressedCoroutine);
+		//    }
+		//}
+		//else
+		//{
+		//    if (speedPressedCoroutine != null) StopCoroutine(speedPressedCoroutine);
+		//    if (Input.GetKeyDown(KeyCode.UpArrow))
+		//    {
+		//        speedAdd(0.25f);
+		//    }
+		//    if (Input.GetKeyDown(KeyCode.DownArrow))
+		//    {
+		//        speedAdd(-0.25f);
+		//    }
+		//}
 
-        if (Input.GetKeyDown(KeyCode.F12))
+		if (Input.GetKeyDown(KeyCode.F12))
         {
             var Info = GameObject.Find("DebugCanvas").transform.Find("Info").gameObject;
             Info.SetActive(!Info.activeSelf);
