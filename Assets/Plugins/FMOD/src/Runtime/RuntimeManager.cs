@@ -228,8 +228,9 @@ namespace FMODUnity
             result = studioSystem.getCoreSystem(out coreSystem);
             CheckInitResult(result, "FMOD.Studio.System.getCoreSystem");
 
-            // 降低音频延迟？
-            coreSystem.setDSPBufferSize(32, 2);
+			// 降低音频延迟？ Low lantancy
+			// ex: (128 * 2) / 44100 = 5ms
+			coreSystem.setDSPBufferSize(128, 2);
 
             result = coreSystem.setOutput(outputType);
             CheckInitResult(result, "FMOD.System.setOutput");

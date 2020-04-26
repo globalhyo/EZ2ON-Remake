@@ -74,9 +74,17 @@ namespace EZR
         static MemorySound()
         {
             FMODUnity.RuntimeManager.CoreSystem.getDSPBufferSize(out uint bufferlength, out int numbuffers);
-            Debug.Log(string.Format("DSP buffer length: {0}, DSP number buffers: {1}", bufferlength, numbuffers));
 
-            FMODUnity.RuntimeManager.CoreSystem.createChannelGroup("Main", out Main);
+			int samplerate;
+			int numRawSpeakers;
+			FMOD.SPEAKERMODE speakerMode;
+			FMODUnity.RuntimeManager.CoreSystem.getSoftwareFormat(out samplerate, out speakerMode, out numRawSpeakers);
+
+			int latancy = (int)(((float)((int)bufferlength * numbuffers) / samplerate) * 1000);
+			Debug.Log(string.Format("DSP buffer length: {0}, DSP number buffers: {1}, Audio Latancy: {2}ms",
+				bufferlength, numbuffers, latancy));
+
+			FMODUnity.RuntimeManager.CoreSystem.createChannelGroup("Main", out Main);
             FMODUnity.RuntimeManager.CoreSystem.createChannelGroup("BGM", out BGM);
             FMODUnity.RuntimeManager.CoreSystem.createChannelGroup("Game", out Game);
 

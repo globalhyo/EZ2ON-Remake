@@ -42,6 +42,7 @@ public class SingleSelectSongsUI : MonoBehaviour
 
     void Start()
     {
+		print(EZR.SongsList.Version);
         if (EZR.SongsList.List.Count == 0 || EZR.SongsList.Version < EZR.Utils.Version2Decmal(EZR.SongsList.MinVer))
         {
             var messageBox = Instantiate(EZR.Master.MessageBox);

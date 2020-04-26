@@ -33,6 +33,7 @@ namespace EZR
         RectTransform rect;
         float initX;
         DisplayLoop displayLoop;
+		private Transform _transform;
 
         // 初始化音符
         public void Init(int index, int position, int length, float x, DisplayLoop loop)
@@ -42,14 +43,16 @@ namespace EZR
 
             displayLoop = loop;
             rect = (RectTransform)transform;
-            if (displayLoop.NoteUseScale)
+			_transform = transform;
+
+			if (displayLoop.NoteUseScale)
                 NoteScale = displayLoop.NoteSize;
             else
             {
                 NoteScale = transform.localScale.y;
                 rect.sizeDelta = new Vector2(displayLoop.NoteSize / NoteScale, rect.sizeDelta.y);
             }
-            transform.localScale = new Vector3(NoteScale, NoteScale, 1);
+			_transform.localScale = new Vector3(NoteScale, NoteScale, 1);
 
             NoteHeight = rect.sizeDelta.y;
 
@@ -85,7 +88,7 @@ namespace EZR
         // 更新位置和长度
         void updateNote()
         {
-			transform.localPosition = new Vector3(
+			_transform.localPosition = new Vector3(
 	initX,
 	(float)((Position - displayLoop.Position) * PlayManager.GetSpeed()) + (int)PlayManager.TargetLineType - PlayManager.JudgmentOffset,
 	0
@@ -118,7 +121,7 @@ namespace EZR
 			int judgeOffset = PlayManager.JudgmentOffset * -1;
 			float dispPosition = (float)displayLoop.Position;
 
-			transform.localPosition = new Vector3(
+			_transform.localPosition = new Vector3(
 				initX,
 				judgeOffset + lineType,
 				0
