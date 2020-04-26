@@ -46,7 +46,7 @@ public class SingleSelectSongsUI : MonoBehaviour
         {
             var messageBox = Instantiate(EZR.Master.MessageBox);
             messageBox.transform.SetParent(transform.parent, false);
-            messageBox.GetComponent<EZR.MessageBox>().Text = "곡 불러오기 실패!\nEZRData 폴더가 게임내 폴더에 있는지 확인해주세요!";
+            messageBox.GetComponent<EZR.MessageBox>().Text = "곡 불러오기 실패!\n버전이 맞지 않습니다.";
             Destroy(this);
             return;
         }

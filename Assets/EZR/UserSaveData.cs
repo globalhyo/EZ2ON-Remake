@@ -167,18 +167,20 @@ namespace EZR
             if (!jobj.ContainsKey(mode.ToString()))
                 jobj[mode.ToString()] = new JObject();
             jobj = (JObject)jobj[mode.ToString()];
-            if (!jobj.ContainsKey(diff.ToString()))
-            {
-                jobj[diff.ToString()] = score;
-                return true;
-            }
-            var bestScore = (int)jobj[diff.ToString()];
+            //if (!jobj.ContainsKey(diff.ToString()))
+            //{
+            //    jobj[diff.ToString()] = score;
+            //    return true;
+            //}
+
+            var bestScore = (int)(jobj[diff.ToString()] ?? 0);
             if (score > bestScore)
             {
                 jobj[diff.ToString()] = score;
                 return true;
             }
-            else return false;
+
+			return false;
         }
 
         public static Option GetOption()
