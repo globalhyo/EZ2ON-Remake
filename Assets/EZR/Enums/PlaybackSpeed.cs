@@ -17,16 +17,16 @@ namespace EZR
 		public const string NCHD_Name = "NC HD";
 		public const string NCSC_Name = "NC SC";
 
-		public static float GetSpeed(this PlaybackType playbackType)
+		public static float GetSpeed(this PlaybackType playbackType, float normal = 0f)
 		{
 			switch (playbackType)
 			{
 				default:
 					return NONE;
 				case PlaybackType.NC_HD:
-					return NC_HD;
+					return NC_HD + normal;
 				case PlaybackType.NC_SC:
-					return NC_SC;
+					return NC_SC + normal;
 			}
 		}
 	}
