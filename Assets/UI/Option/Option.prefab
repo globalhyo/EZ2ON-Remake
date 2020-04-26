@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 765681181870039237}
   - component: {fileID: 2085729485766258764}
   - component: {fileID: 2592767493286155902}
-  - component: {fileID: 4871101654370743704}
+  - component: {fileID: 6906230817602914498}
   m_Layer: 5
   m_Name: ChkBoxEasy
   m_TagString: Untagged
@@ -127,7 +127,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
---- !u!114 &4871101654370743704
+--- !u!114 &6906230817602914498
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -136,10 +136,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 49143196559892182}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d247fe13ac21b84488ae5a19823331c, type: 3}
+  m_Script: {fileID: 11500000, guid: 63b7ecc83bd43e94b9b1e5c0adf2dd00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TipsText: "\uD310\uC815 \uBC30\uC728: 1.2"
+  TipsText: "\uD310\uC815\uBC30\uC728 {0}"
+  judgeDifficult: 0
 --- !u!1 &82664791771578371
 GameObject:
   m_ObjectHideFlags: 0
@@ -428,7 +429,7 @@ GameObject:
   - component: {fileID: 876552807092957268}
   - component: {fileID: 3472206982648803574}
   - component: {fileID: 8520698953047520014}
-  - component: {fileID: 6763914738496326603}
+  - component: {fileID: 2441020995706319402}
   m_Layer: 5
   m_Name: ChkBoxEx
   m_TagString: Untagged
@@ -544,7 +545,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
---- !u!114 &6763914738496326603
+--- !u!114 &2441020995706319402
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -553,10 +554,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 166323383616512531}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d247fe13ac21b84488ae5a19823331c, type: 3}
+  m_Script: {fileID: 11500000, guid: 63b7ecc83bd43e94b9b1e5c0adf2dd00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TipsText: "\uD310\uC815 \uBC30\uC728: 0.4"
+  TipsText: "\uD310\uC815\uBC30\uC728 {0}"
+  judgeDifficult: 3
 --- !u!1 &207076612953258479
 GameObject:
   m_ObjectHideFlags: 0
@@ -14165,7 +14167,7 @@ GameObject:
   - component: {fileID: 6058846159984375338}
   - component: {fileID: 7290085703844573184}
   - component: {fileID: 5289319442045117922}
-  - component: {fileID: 9159865639722377738}
+  - component: {fileID: 9025416296786246399}
   m_Layer: 5
   m_Name: ChkBoxHard
   m_TagString: Untagged
@@ -14281,7 +14283,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
---- !u!114 &9159865639722377738
+--- !u!114 &9025416296786246399
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -14290,10 +14292,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4462029720641459451}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d247fe13ac21b84488ae5a19823331c, type: 3}
+  m_Script: {fileID: 11500000, guid: 63b7ecc83bd43e94b9b1e5c0adf2dd00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TipsText: "\uD310\uC815 \uBC30\uC728: 0.6"
+  TipsText: "\uD310\uC815\uBC30\uC728 {0}"
+  judgeDifficult: 2
 --- !u!1 &4474869165461357840
 GameObject:
   m_ObjectHideFlags: 0
@@ -26323,7 +26326,7 @@ GameObject:
   - component: {fileID: 3637605875936091165}
   - component: {fileID: 1169580089922828207}
   - component: {fileID: 5499393339257291577}
-  - component: {fileID: 4231514784652093128}
+  - component: {fileID: 3931931745507926773}
   m_Layer: 5
   m_Name: ChkBoxNormal
   m_TagString: Untagged
@@ -26439,7 +26442,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
---- !u!114 &4231514784652093128
+--- !u!114 &3931931745507926773
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -26448,10 +26451,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8489884330457314545}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d247fe13ac21b84488ae5a19823331c, type: 3}
+  m_Script: {fileID: 11500000, guid: 63b7ecc83bd43e94b9b1e5c0adf2dd00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TipsText: "\uD310\uC815 \uBC30\uC728: 0.8"
+  TipsText: "\uD310\uC815\uBC30\uC728 {0}"
+  judgeDifficult: 1
 --- !u!1 &8515849185079554060
 GameObject:
   m_ObjectHideFlags: 0

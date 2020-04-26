@@ -14,7 +14,7 @@ namespace EZR
         Coroutine fade;
         Vector2? startPos;
 
-        void Start()
+        protected virtual void Start()
         {
             canvas = PersistentCanvas.Instance.transform;
         }
