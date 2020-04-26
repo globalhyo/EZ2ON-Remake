@@ -15,7 +15,7 @@ namespace EZR
         }
 
         public static decimal Version = 1;
-        public static string MinVer => "3.0";
+        public static string MinVer => "4.3.0";
         public static List<SongInfo> List;
         public static int CurrentIndex = 0;
         public static SortMode CurrentSortMode = SortMode.ByName;
