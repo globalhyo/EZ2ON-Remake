@@ -189,8 +189,10 @@ public class SinglePlay : MonoBehaviour
         EZR.MemorySound.Main.stop();
         EZR.MemorySound.BGM.stop();
         EZR.MemorySound.UnloadAllSound();
+		EZR.UserSaveData.SetSpeed(EZR.PlayManager.SongName, EZR.PlayManager.GameMode, EZR.PlayManager.FallSpeed);
+		EZR.UserSaveData.SaveData();
 
-        if (isResult)
+		if (isResult)
             SceneManager.LoadScene("SingleResult");
         else
             SceneManager.LoadScene("SingleSelectSongs");

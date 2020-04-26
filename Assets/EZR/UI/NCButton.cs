@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using EZR;
 
 public class NCButton : MonoBehaviour
 {
@@ -26,38 +27,39 @@ public class NCButton : MonoBehaviour
 	{
 		var pointerEventData = (PointerEventData)baseEventData;
 		if (pointerEventData.button == PointerEventData.InputButton.Left)
-			EZR.PlayManager.PlaybackSpeed += 0.25f;
+			PlayManager.PlaybackType++;
 		else if (pointerEventData.button == PointerEventData.InputButton.Right)
-			EZR.PlayManager.PlaybackSpeed -= 0.25f;
+			PlayManager.PlaybackType--;
 
-		if (EZR.PlayManager.PlaybackSpeed > 1.5f)
-			EZR.PlayManager.PlaybackSpeed = 1f;
-		if (EZR.PlayManager.PlaybackSpeed < 1f)
-			EZR.PlayManager.PlaybackSpeed = 1.5f;
+		if (PlayManager.PlaybackType > PlaybackType.NC_SC)
+			PlayManager.PlaybackType = PlaybackType.NONE;
 
-		EZR.MemorySound.PlaySound("e_count_1");
-		Change(EZR.PlayManager.PlaybackSpeed);
+		else if (PlayManager.PlaybackType < PlaybackType.NONE)
+			PlayManager.PlaybackType = PlaybackType.NC_SC;
+
+		Change(PlayManager.PlaybackType);
+		MemorySound.PlaySound("e_count_1");
 	}
 
 	/*----------------[PROTECTED && PRIVATE METHOD]----------------*/
 
 	private void Start()
 	{
-		Change(EZR.PlayManager.PlaybackSpeed);
+		Change(PlayManager.PlaybackType);
 	}
 
-	private void Change(float speed)
+	private void Change(PlaybackType type)
 	{
-		switch (speed)
+		switch (type)
 		{
-			case 1f:
-				_text.text = "NONE";
+			default:
+				_text.text = PlaybackSpeed.NONE_Name;
 				break;
-			case 1.25f:
-				_text.text = "NC HD";
+			case PlaybackType.NC_HD:
+				_text.text = PlaybackSpeed.NCHD_Name;
 				break;
-			case 1.5f:
-				_text.text = "NC SC";
+			case PlaybackType.NC_SC:
+				_text.text = PlaybackSpeed.NCSC_Name;
 				break;
 		}
 	}

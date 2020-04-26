@@ -291,7 +291,7 @@ namespace EZR
             {
 				if (mediaPlayer != null && displayUGUI != null)
 				{
-					mediaPlayer.Control.SetPlaybackRate(EZR.PlayManager.PlaybackSpeed);
+					mediaPlayer.Control.SetPlaybackRate(PlayManager.PlaybackType.GetSpeed());
 					mediaPlayer.Control.Play();
 					mediaPlayer.Control.Seek(-PlayManager.BGADelay * 1000);
 				}
@@ -419,7 +419,7 @@ namespace EZR
 				PlayManager.IsPlayBGA = false;
 				if (mediaPlayer != null && displayUGUI != null)
 				{
-					mediaPlayer.Control.SetPlaybackRate(EZR.PlayManager.PlaybackSpeed);
+					mediaPlayer.Control.SetPlaybackRate(PlayManager.PlaybackType.GetSpeed());
 					mediaPlayer.Control.Play();
 					displayUGUI.color = Color.white;
 				}
@@ -439,7 +439,7 @@ namespace EZR
 				{
 					if (mediaPlayer != null && displayUGUI != null)
 					{
-						mediaPlayer.Control.SetPlaybackRate(EZR.PlayManager.PlaybackSpeed);
+						mediaPlayer.Control.SetPlaybackRate(PlayManager.PlaybackType.GetSpeed());
 						mediaPlayer.Control.Play();
 						displayUGUI.color = Color.white;
 					}
@@ -447,8 +447,10 @@ namespace EZR
 				}
 			}
 
-            // 插值下落速度
-            PlayManager.RealFallSpeed = Mathf.Lerp(PlayManager.RealFallSpeed, PlayManager.FallSpeed,
+            // 插值下落速度 Calculate nightCore speed
+            PlayManager.RealFallSpeed = Mathf.Lerp(PlayManager.RealFallSpeed,
+				Mathf.Max(PlayManager.MinSpeed,
+				PlayManager.FallSpeed - ((PlayManager.PlaybackType.GetSpeed() + PlayManager.MinSpeed) - 1f)),
                 Mathf.Min(Time.deltaTime * 12, 1)
             );
 

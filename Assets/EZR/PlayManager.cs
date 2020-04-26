@@ -15,10 +15,11 @@ namespace EZR
         public static double UnscaledPosition = 0;
         public static double Position => UnscaledPosition * JudgmentDelta.MeasureScale;
         static float fallSpeed = 2;
-        public static float FallSpeed
+		public const float MinSpeed = 0.25f;
+		public static float FallSpeed
         {
             get => fallSpeed;
-            set { fallSpeed = Mathf.Max(value, 0.25f); }
+            set { fallSpeed = Mathf.Max(value, MinSpeed); }
         }
         public static float RealFallSpeed = FallSpeed;
         static float speedScale = 1.8f;
@@ -61,7 +62,7 @@ namespace EZR
         public static int JudgmentOffset = 0;
 
 		public static NotePattern NotePattern = NotePattern.None;
-		public static float PlaybackSpeed = 1f;
+		public static PlaybackType PlaybackType = PlaybackType.NONE;
 
         public static void LoadPattern()
         {

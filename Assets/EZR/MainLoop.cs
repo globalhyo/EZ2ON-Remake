@@ -63,7 +63,7 @@ namespace EZR
                         note.id == 0)
                             IsPlayBGA = true;
 
-                        MemorySound.PlaySound(note.id, note.vol, note.pan, MemorySound.BGM, PlaybackSpeed);
+                        MemorySound.PlaySound(note.id, note.vol, note.pan, MemorySound.BGM, PlaybackType.GetSpeed());
 
                         // debug事件
                         if (DebugEvent != null)
@@ -87,7 +87,7 @@ namespace EZR
             lastTime = now;
 
 			// nightCore
-            TickPerSecond = (TimeLines.BPM * PlaybackSpeed) * 0.25d * PatternUtils.Pattern.TickPerMeasure / 60d;
+            TickPerSecond = (TimeLines.BPM * PlaybackType.GetSpeed()) * 0.25d * PatternUtils.Pattern.TickPerMeasure / 60d;
             PositionDelta = DeltaTime * TickPerSecond;
             UnscaledPosition += PositionDelta;
 
@@ -100,7 +100,7 @@ namespace EZR
                 return;
             }
 
-            beat += DeltaTime * ((TimeLines.BPM * PlaybackSpeed) / 60d);
+            beat += DeltaTime * ((TimeLines.BPM * PlaybackType.GetSpeed()) / 60d);
 
             // 节奏事件
             if (beat >= 1)

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using EZR;
 
 public class NoteButton : MonoBehaviour
 {
@@ -27,17 +28,18 @@ public class NoteButton : MonoBehaviour
 	{
 		var pointerEventData = (PointerEventData)baseEventData;
 		if (pointerEventData.button == PointerEventData.InputButton.Left)
-			EZR.PlayManager.NotePattern++;
+			PlayManager.NotePattern++;
 		else if (pointerEventData.button == PointerEventData.InputButton.Right)
-			EZR.PlayManager.NotePattern--;
+			PlayManager.NotePattern--;
 
-		if (EZR.PlayManager.NotePattern > EZR.NotePattern.Random)
-			EZR.PlayManager.NotePattern = EZR.NotePattern.None;
-		else if (EZR.PlayManager.NotePattern < EZR.NotePattern.None)
-			EZR.PlayManager.NotePattern = EZR.NotePattern.Random;
+		if (PlayManager.NotePattern > NotePattern.Random)
+			PlayManager.NotePattern = NotePattern.None;
 
-		EZR.MemorySound.PlaySound("e_count_1");
-		Change(EZR.PlayManager.NotePattern);
+		else if (PlayManager.NotePattern < NotePattern.None)
+			PlayManager.NotePattern = NotePattern.Random;
+
+		Change(PlayManager.NotePattern);
+		MemorySound.PlaySound("e_count_1");
 	}
 
 	/*----------------[PROTECTED && PRIVATE METHOD]----------------*/
@@ -49,10 +51,10 @@ public class NoteButton : MonoBehaviour
 
 	private void Start()
 	{
-		Change(EZR.PlayManager.NotePattern);
+		Change(PlayManager.NotePattern);
 	}
 
-	private void Change(EZR.NotePattern notePattern)
+	private void Change(NotePattern notePattern)
 	{
 		_image.sprite = _sprites[(int)notePattern];
 	}

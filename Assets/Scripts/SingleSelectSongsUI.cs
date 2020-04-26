@@ -582,7 +582,7 @@ public class SingleSelectSongsUI : MonoBehaviour
         }
     }
 
-	private void LoadSpeed()
+	public void LoadSpeed()
 	{
 		speed = EZR.UserSaveData.GetSpeed(currentSongName, currentMode);
 		updateBtnSpeed();
@@ -1023,8 +1023,11 @@ public class SingleSelectSongsUI : MonoBehaviour
             EZR.MemorySound.PlaySound("Decide");
         else
             EZR.MemorySound.PlaySound("e_start");
+	}
 
-		EZR.UserSaveData.SetSpeed(currentSongName, mode, speed);
+	private void SaveSpeed()
+	{
+		EZR.UserSaveData.SetSpeed(currentSongName, currentMode, speed);
 		EZR.UserSaveData.SaveData();
 	}
 
@@ -1125,7 +1128,7 @@ public class SingleSelectSongsUI : MonoBehaviour
 
     void speedAddSmall(float val)
     {
-        speed = Mathf.Max(speed + val, 0.25f);
+        speed = Mathf.Max(speed + val, EZR.PlayManager.MinSpeed);
         updateBtnSpeed();
         EZR.MemorySound.PlaySound("e_count_1");
     }
@@ -1139,9 +1142,9 @@ public class SingleSelectSongsUI : MonoBehaviour
         else
             closest = EZR.Utils.FindClosestNumber(decimalPart, EZR.PlayManager.FallSpeedStep, false);
         if (Mathf.Abs(((int)speed + closest) - speed) > 0.009f)
-            speed = Mathf.Max((int)speed + closest, 0.25f);
+            speed = Mathf.Max((int)speed + closest, EZR.PlayManager.MinSpeed);
         else
-            speed = Mathf.Max(((int)speed + closest) + val, 0.25f);
+            speed = Mathf.Max(((int)speed + closest) + val, EZR.PlayManager.MinSpeed);
         updateBtnSpeed();
         EZR.MemorySound.PlaySound("e_count_1");
     }
